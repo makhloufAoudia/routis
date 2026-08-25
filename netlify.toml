@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Le plugin officiel transforme les routes Next.js en fonctions Netlify.
+# Il est installé automatiquement par Netlify ; cette ligne le rend explicite.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Les documents déposés ne doivent jamais être mis en cache par un intermédiaire :
+# ils ne sont servis qu'au propriétaire ou à un administrateur.
+[[headers]]
+  for = "/api/fichier/*"
+  [headers.values]
+    Cache-Control = "private, no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
