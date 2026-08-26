@@ -175,6 +175,9 @@ try {
     Boolean(lien) && lien.startsWith("/api/fichier/"));
 
   await connecter(page, ADMIN.email, ADMIN.mdp);
+  verifier("L'en-tête signale les dossiers à contrôler",
+    (await page.locator(".gnav .pastille").count()) > 0,
+    await texte(page).then((t) => t.slice(0, 60)));
   await page.goto(BASE + "/admin/documents");
   verifier("Le document apparaît dans la file admin",
     (await texte(page)).includes(TRANS.raison));
@@ -216,6 +219,9 @@ try {
   /* ------------------------------------------------------------ 7. Devis */
   titre("7. Réponse du transporteur");
   await connecter(page, TRANS.email, TRANS.mdp);
+  verifier("Le transporteur voit qu'une demande l'attend",
+    (await page.locator(".gnav .pastille").innerText()).trim().startsWith("1"),
+    await page.locator(".gnav .pastille").count() ? "présent" : "absent");
   await page.goto(BASE + "/espace/demandes");
   verifier("Le transporteur voit la demande", (await texte(page)).includes("Palettes de carrelage"));
   await page.fill('form input[name="prix"]', "48000");

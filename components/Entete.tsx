@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { utilisateur } from "@/lib/auth";
 import { estInstalle } from "@/lib/db";
+import { enAttente } from "@/lib/attente";
 import BasculeTheme from "./BasculeTheme";
 import MenuCompact from "./MenuCompact";
 
@@ -8,6 +9,16 @@ export default async function Entete() {
   const u = await utilisateur();
   let installe = true;
   try { installe = await estInstalle(); } catch { installe = false; }
+  const attente = installe ? await enAttente(u) : null;
+
+  /* Le compteur ne se colle qu'au lien qui y mène : ailleurs il ne voudrait rien dire. */
+  const pastille = (lien: string) =>
+    attente && attente.lien === lien ? (
+      <span className="pastille">
+        {attente.nombre}
+        <span className="lu-seul"> {attente.libelle}</span>
+      </span>
+    ) : null;
 
   return (
     <>
@@ -35,9 +46,15 @@ export default async function Entete() {
             <Link href="/devis">Demander un devis</Link>
             {u ? (
               <>
-                {u.role === "transporteur" && <Link href="/espace">Mon espace</Link>}
-                {u.role === "admin" && <Link href="/admin">Administration</Link>}
-                {u.role === "client" && <Link href="/mes-demandes">Mes demandes</Link>}
+                {u.role === "transporteur" && (
+                  <Link href="/espace/demandes">Mon espace{pastille("/espace/demandes")}</Link>
+                )}
+                {u.role === "admin" && (
+                  <Link href="/admin">Administration{pastille("/admin")}</Link>
+                )}
+                {u.role === "client" && (
+                  <Link href="/mes-demandes">Mes demandes{pastille("/mes-demandes")}</Link>
+                )}
                 <Link href="/deconnexion">Déconnexion</Link>
               </>
             ) : (
