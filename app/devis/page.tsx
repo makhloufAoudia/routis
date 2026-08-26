@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { EQUIPEMENTS, distanceKm, nouvelleReference } from "@/lib/metier";
@@ -147,17 +148,13 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="depart">Ville de départ</label>
-            <select id="depart" name="depart" required defaultValue="">
-              <option value="">— choisir —</option>
-              {villes.map((v) => <option key={v.id} value={v.id}>{v.nom}</option>)}
-            </select>
+            <ListeFiltrable id="depart" nom="depart" requis
+                            options={villes.map((v) => ({ v: String(v.id), l: v.nom }))} />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="arrivee">Ville d&apos;arrivée</label>
-            <select id="arrivee" name="arrivee" required defaultValue="">
-              <option value="">— choisir —</option>
-              {villes.map((v) => <option key={v.id} value={v.id}>{v.nom}</option>)}
-            </select>
+            <ListeFiltrable id="arrivee" nom="arrivee" requis
+                            options={villes.map((v) => ({ v: String(v.id), l: v.nom }))} />
           </div>
         </div>
 

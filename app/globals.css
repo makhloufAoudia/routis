@@ -152,6 +152,22 @@ legend{font-weight:700;font-size:15px;padding:0 6px}
 .btn.pleine{display:block;width:100%}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
 
+/* ---------- liste filtrable ---------- */
+/* Le champ et sa liste sont enfants directs de .champ, déjà en position
+   relative : la liste se cale donc sous le champ sans conteneur en plus. */
+.filtrable-champ{cursor:text}
+.filtrable-fleche{position:absolute;right:13px;top:50%;margin-top:-2px;width:0;height:0;pointer-events:none;
+  border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--ink-3)}
+.filtrable-liste{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:60;margin:0;padding:4px;
+  list-style:none;max-height:264px;overflow-y:auto;background:#fff;
+  border:1px solid var(--rule-2);border-radius:8px;box-shadow:var(--sh-m)}
+.filtrable-opt{display:flex;align-items:baseline;gap:8px;padding:8px 11px;border-radius:5px;
+  font-size:15px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filtrable-opt.actif{background:var(--pri-soft)}
+.filtrable-opt.retenu{font-weight:700}
+.filtrable-sous{margin-left:auto;font-size:13px;color:var(--ink-3);flex:none}
+.filtrable-rien{padding:11px;font-size:14.5px;color:var(--ink-3)}
+
 /* ---------- messages ---------- */
 .msg{border:1px solid var(--rule);border-left:4px solid var(--ink-3);background:#fff;border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:14px;font-size:15px}
 .msg.ok{border-left-color:var(--ok);background:var(--ok-soft)}

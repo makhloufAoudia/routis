@@ -33,6 +33,14 @@ async function attendre(page, motif, ms = 6000) {
   catch { return false; }
 }
 
+/** Choisit une valeur dans une liste filtrable : on tape, puis on prend la 1re. */
+async function choisir(page, id, texte) {
+  await page.click("#" + id);
+  await page.fill("#" + id, texte);
+  await page.waitForSelector("#" + id + "-liste .filtrable-opt", { timeout: 8000 });
+  await page.locator("#" + id + "-liste .filtrable-opt").first().click();
+}
+
 async function connecter(page, email, mdp) {
   await page.goto(BASE + "/deconnexion");
   await page.goto(BASE + "/connexion");
@@ -112,10 +120,13 @@ try {
   await page.fill('input[name="raison_sociale"]', TRANS.raison);
   await page.fill('input[name="forme"]', "SARL");
   await page.fill('input[name="registre"]', "16/00-1234567 B 24");
-  await page.selectOption('select[name="pays"]', "DZ");
-  const villes = await page.locator('select[name="ville_id"] option').count();
-  verifier("La liste des villes est remplie", villes > 50, villes + " options");
-  await page.selectOption('select[name="ville_id"]', { index: 1 });
+  await choisir(page, "pays", "Algérie");
+  await page.click("#ville_id");
+  await page.fill("#ville_id", "");
+  await page.waitForSelector("#ville_id-liste .filtrable-opt");
+  const villes = await page.locator("#ville_id-liste .filtrable-opt").count();
+  verifier("La liste des villes se filtre", villes > 20, villes + " propositions");
+  await choisir(page, "ville_id", "Alger");
   await page.fill('input[name="telephone"]', "021 45 67 89");
   await page.fill('textarea[name="description"]', "Transport national de marchandises depuis 2009.");
   await page.check('input[name="service"][value="fret"]');
@@ -171,8 +182,10 @@ try {
   titre("6. Demande de devis");
   await connecter(page, CLIENT.email, CLIENT.mdp);
   await page.goto(BASE + "/devis?type=fret");
-  await page.selectOption('select[name="depart"]', { index: 1 });
-  await page.selectOption('select[name="arrivee"]', { index: 2 });
+  await choisir(page, "depart", "Alger");
+  await choisir(page, "arrivee", "Oran");
+  verifier("Le filtre retrouve la ville tapée",
+    (await page.inputValue("#arrivee")) === "Oran", await page.inputValue("#arrivee"));
   await page.fill('input[name="nature"]', "Palettes de carrelage");
   await page.fill('input[name="poids"]', "2400");
   await page.click('form.carte button[type="submit"]');

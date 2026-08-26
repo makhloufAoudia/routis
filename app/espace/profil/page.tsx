@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import ListeFiltrable from "@/components/ListeFiltrable";
 import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, journal, compter } from "@/lib/db";
 import { SERVICES, EQUIPEMENTS, COUVERTURES, EFFECTIFS } from "@/lib/metier";
@@ -131,9 +132,8 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="pays">Pays</label>
-            <select id="pays" name="pays" defaultValue={paysAffiche}>
-              {paysListe.map((p) => <option key={p.code} value={p.code}>{p.nom}</option>)}
-            </select>
+            <ListeFiltrable id="pays" nom="pays" valeur={paysAffiche} vide=""
+                            options={paysListe.map((p) => ({ v: p.code, l: p.nom }))} />
             <div className="aide">
               Pour changer la liste des villes,{" "}
               <Link href="/espace/profil?pays=FR">rechargez avec un autre pays</Link>.
@@ -141,10 +141,8 @@ export default async function Page({
           </div>
           <div className="champ">
             <label className="ch" htmlFor="ville_id">Ville</label>
-            <select id="ville_id" name="ville_id" defaultValue={String(t.ville_id ?? "")}>
-              <option value="">— choisir —</option>
-              {villes.map((v) => <option key={v.id} value={v.id}>{v.nom}</option>)}
-            </select>
+            <ListeFiltrable id="ville_id" nom="ville_id" valeur={String(t.ville_id ?? "")}
+                            options={villes.map((v) => ({ v: String(v.id), l: v.nom }))} />
           </div>
         </div>
         <div className="champ">

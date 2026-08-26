@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ListeFiltrable from "@/components/ListeFiltrable";
 import { q, compter, valeur, estInstalle } from "@/lib/db";
 import { SERVICES, EQUIPEMENTS, COUVERTURES, initiales, noteAffichee, extrait } from "@/lib/metier";
 
@@ -153,19 +154,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<Par
         <aside>
           <form method="get" className="filtres" id="filtres">
             <h3>Pays</h3>
-            <select name="pays" defaultValue={pays}>
-              {paysListe.map((p) => (
-                <option key={p.code} value={p.code}>{p.nom} ({p.n})</option>
-              ))}
-            </select>
+            <div className="champ">
+              <ListeFiltrable nom="pays" valeur={pays} vide=""
+                              options={paysListe.map((p) => ({ v: p.code, l: p.nom, sous: String(p.n) }))} />
+            </div>
 
             <h3>Ville</h3>
-            <select name="ville" defaultValue={String(villeId || "")}>
-              <option value="">Toutes les villes</option>
-              {villesDispo.map((v) => (
-                <option key={v.id} value={v.id}>{v.nom} ({v.n})</option>
-              ))}
-            </select>
+            <div className="champ">
+              <ListeFiltrable nom="ville" valeur={String(villeId || "")} vide="Toutes les villes"
+                              options={villesDispo.map((v) => ({ v: String(v.id), l: v.nom, sous: String(v.n) }))} />
+            </div>
 
             <h3>Type de service</h3>
             {Object.entries(SERVICES).map(([k, lab]) => (
