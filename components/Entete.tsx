@@ -4,6 +4,8 @@ import { estInstalle } from "@/lib/db";
 import { enAttente } from "@/lib/attente";
 import BasculeTheme from "./BasculeTheme";
 import MenuCompact from "./MenuCompact";
+import Onglets from "./Onglets";
+import { Suspense } from "react";
 
 export default async function Entete() {
   const u = await utilisateur();
@@ -67,13 +69,19 @@ export default async function Entete() {
         </div>
       </div>
 
-      <nav className="tabs">
-        <div className="tabs-in">
-          <Link href="/annuaire">Annuaire</Link>
-          <Link href="/devis?type=fret">Marchandises</Link>
-          <Link href="/devis?type=pax">Personnes</Link>
-        </div>
-      </nav>
+      {/* Lire la requête oblige à passer côté navigateur ; le repli affiche les
+          mêmes onglets sans mise en évidence, jamais une barre vide. */}
+      <Suspense fallback={
+        <nav className="tabs" aria-label="Sections principales">
+          <div className="tabs-in">
+            <Link href="/annuaire">Annuaire</Link>
+            <Link href="/devis?type=fret">Marchandises</Link>
+            <Link href="/devis?type=pax">Personnes</Link>
+          </div>
+        </nav>
+      }>
+        <Onglets />
+      </Suspense>
     </>
   );
 }

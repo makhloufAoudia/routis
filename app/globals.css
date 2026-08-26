@@ -102,7 +102,10 @@ img{max-width:100%;height:auto}
 .tabs{background:var(--surface);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:30}
 .tabs-in{max-width:1340px;margin:0 auto;padding:0 clamp(12px,2.5vw,28px);display:flex;align-items:center;gap:4px;overflow-x:auto}
 .tabs a{padding:13px 15px 11px;text-decoration:none;color:var(--ink-2);font-weight:500;font-size:15px;border-bottom:3px solid transparent;white-space:nowrap}
-.tabs a.on{color:var(--ink);font-weight:700;border-bottom-color:var(--brand)}
+/* L'onglet actif change de couleur, pas seulement d'épaisseur : le gras seul
+   se remarque mal, et un trait seul n'existe pas pour qui distingue mal les
+   couleurs — les deux ensemble se voient dans tous les cas. */
+.tabs a.on{color:var(--pri);font-weight:700;border-bottom-color:var(--brand)}
 .tabs a:hover{color:var(--ink)}
 .tabs .sp{flex:1}
 
