@@ -96,8 +96,8 @@ label.ch{display:block;font-size:13.5px;font-weight:600;color:var(--ink-2);margi
 
   .champ > input:not([type=radio]):not([type=checkbox]),
   .champ > select,
-  .champ > textarea{padding-top:23px;padding-bottom:5px}
-  .champ > textarea{padding-top:25px;min-height:124px}
+  .champ > textarea{padding-top:25px;padding-bottom:4px}
+  .champ > textarea{padding-top:27px;min-height:124px}
 
   /* L'indication ne s'affiche qu'une fois le champ actif : sinon elle
      entrerait en concurrence avec le libellé. */
@@ -116,7 +116,7 @@ label.ch{display:block;font-size:13.5px;font-weight:600;color:var(--ink-2);margi
   .champ:has(> select) > label.ch,
   .champ:has(> input[type=date]) > label.ch,
   .champ:has(> input[type=file]) > label.ch{
-    transform:translateY(-9px) scale(.78);
+    transform:translateY(-13px) scale(.75);
     font-weight:600;
   }
 
