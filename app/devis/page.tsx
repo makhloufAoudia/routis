@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
@@ -74,7 +75,8 @@ async function deposer(formData: FormData) {
       distance_km: distanceKm(parseFloat(vd.lat), parseFloat(vd.lon), parseFloat(va.lat), parseFloat(va.lon)),
       date_souhaitee: date || null,
     },
-    vd.id
+    vd.id,
+    cible
   );
 
   redirect(`/demande/${cree!.id}`);
@@ -119,8 +121,10 @@ export default async function Page({
 
       {cible && (
         <div className="msg info">
-          Votre demande sera adressée en priorité à <b>{cible.raison_sociale}</b>, sans vous
-          empêcher de recevoir d&apos;autres offres.
+          Votre demande sera adressée à <b>{cible.raison_sociale}</b>, et à elle seule.
+          Pour comparer plusieurs prix, repassez par{" "}
+          <Link href="/devis">Demander un devis</Link> : la demande partira alors à tous
+          les transporteurs vérifiés qui correspondent.
         </div>
       )}
       {sp.erreur && <div className="msg err">{messages[sp.erreur] ?? "Une erreur est survenue."}</div>}

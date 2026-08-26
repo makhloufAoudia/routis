@@ -80,24 +80,36 @@ export async function mailDocumentRefuse(transporteurId: number, typeLisible: st
       { texte: "Déposer un document", url: `${urlSite()}/espace/documents` }));
 }
 
-export async function mailNouvelleDemande(d: Demande, villeDepart: number, limite = 25) {
-  const cibles = await ligne<{ liste: { email: string }[] }>(
-    `SELECT json_agg(json_build_object('email', u.email)) AS liste FROM (
-       SELECT DISTINCT u.email FROM transporteurs t
-       JOIN utilisateurs u ON u.id=t.utilisateur_id
-       JOIN transporteur_services ts ON ts.transporteur_id=t.id
-       JOIN villes v ON v.id=t.ville_id
-       WHERE t.statut='verifie' AND ts.service=$1
-         AND v.pays = (SELECT pays FROM villes WHERE id=$2)
-       LIMIT ${limite}
-     ) u`, [d.type, villeDepart]);
+export async function mailNouvelleDemande(
+  d: Demande, villeDepart: number, cible: number | null = null, limite = 25
+) {
+  /* Demande adressée : une seule entreprise est prévenue, celle que le client a
+     choisie. Sinon, tous les transporteurs vérifiés du pays de départ qui
+     proposent ce service. La règle est la même que celle de leur liste — sans
+     quoi on annoncerait par e-mail une demande introuvable sur le site. */
+  const cibles = cible
+    ? await ligne<{ liste: { email: string }[] }>(
+        `SELECT json_agg(json_build_object('email', u.email)) AS liste
+         FROM transporteurs t JOIN utilisateurs u ON u.id=t.utilisateur_id
+         WHERE t.id=$1 AND t.statut='verifie'`, [cible])
+    : await ligne<{ liste: { email: string }[] }>(
+        `SELECT json_agg(json_build_object('email', u.email)) AS liste FROM (
+           SELECT DISTINCT u.email FROM transporteurs t
+           JOIN utilisateurs u ON u.id=t.utilisateur_id
+           JOIN transporteur_services ts ON ts.transporteur_id=t.id
+           WHERE t.statut='verifie' AND ts.service=$1
+             AND t.pays = (SELECT pays FROM villes WHERE id=$2)
+           LIMIT ${limite}
+         ) u`, [d.type, villeDepart]);
   const liste = cibles?.liste ?? [];
   const html = gabarit("Nouvelle demande à traiter",
     `<p>Une nouvelle demande vient d'être déposée :</p>
      <p><b>${d.depart} → ${d.arrivee}</b><br>${d.distance_km} km ·
      ${d.type === "fret" ? "Marchandises" : "Personnes"}
      ${d.date_souhaitee ? " · souhaitée le " + dateFr(d.date_souhaitee) : ""}</p>
-     <p>Le premier à proposer un prix a le plus de chances d'être retenu.</p>`,
+     <p>${cible
+        ? "Cette demande vous est adressée : le client vous a choisi dans l'annuaire."
+        : "Le premier à proposer un prix a le plus de chances d'être retenu."}</p>`,
     { texte: "Répondre à la demande", url: `${urlSite()}/espace/demandes` });
   for (const c of liste) {
     await envoyerMail(c.email, `Nouvelle demande : ${d.depart} → ${d.arrivee}`, html);

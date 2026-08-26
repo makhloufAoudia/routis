@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, ligne, valeur, journal } from "@/lib/db";
 import { montant, dateFr } from "@/lib/metier";
+import { DEMANDE_VISIBLE } from "@/lib/diffusion";
 import { mailDevisRecu } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -87,11 +88,11 @@ export default async function Page({
      JOIN villes va ON va.id=d.ville_arrivee
      JOIN utilisateurs u ON u.id=d.client_id
      LEFT JOIN devis m ON m.demande_id=d.id AND m.transporteur_id=$1
-     WHERE (d.statut IN ('ouverte','devis') AND d.type = ANY($2::text[]))
+     WHERE (d.statut IN ('ouverte','devis') AND ${DEMANDE_VISIBLE})
         OR m.id IS NOT NULL
      ORDER BY (d.statut='acceptee') DESC, (d.transporteur_cible=$1) DESC, d.cree_le DESC
      LIMIT 50`,
-    [t.id, services]
+    [t.id, services, t.pays]
   );
 
   const erreurs: Record<string, string> = {

@@ -16,6 +16,8 @@ const ADMIN = { email: "admin@routis.dz", mdp: "motdepasse123", nom: "Administra
 const CLIENT = { email: "client@exemple.dz", mdp: "motdepasse123", nom: "Nadia Client" };
 const TRANS = { email: "transport@exemple.dz", mdp: "motdepasse123", nom: "Karim Gérant",
                 raison: "SARL Transports Atlas" };
+const TRANS2 = { email: "sahara@exemple.dz", mdp: "motdepasse123", nom: "Yacine Gérant",
+                 raison: "EURL Sahara Cargo" };
 
 let ok = 0, ko = 0;
 const echecs = [];
@@ -277,6 +279,66 @@ try {
   verifier("La demande figure dans l'administration", (await texte(page)).includes("RTS-"));
   await page.goto(BASE + "/admin/emails");
   verifier("Le journal des e-mails est consultable", (await texte(page)).includes("Journal des e-mails"));
+  /* ---------------------------------------------------------- 11. Demande adressée */
+  titre("11. Demande adressée à une seule entreprise");
+
+  /* Un second transporteur, pour vérifier qu'une demande adressée reste privée. */
+  await page.goto(BASE + "/deconnexion");
+  await page.goto(BASE + "/inscription?type=transporteur");
+  await page.fill('input[name="raison_sociale"]', TRANS2.raison);
+  await page.fill('input[name="nom"]', TRANS2.nom);
+  await page.fill('input[name="email"]', TRANS2.email);
+  await page.fill('input[name="mot_de_passe"]', TRANS2.mdp);
+  await page.click('form.carte button[type="submit"]');
+  await page.waitForLoadState("networkidle");
+  await page.goto(BASE + "/espace/profil");
+  await choisir(page, "pays", "Algérie");
+  await choisir(page, "ville_id", "Alger");
+  await page.check('input[name="service"][value="fret"]');
+  await page.click('form.carte button[type="submit"]');
+  await page.waitForLoadState("networkidle");
+
+  await connecter(page, ADMIN.email, ADMIN.mdp);
+  await page.goto(BASE + "/admin/transporteurs?statut=en_attente");
+  let boutons = await page.locator('button:has-text("Vérifier et publier")').count();
+  if (!boutons) {
+    await page.goto(BASE + "/admin/transporteurs?statut=brouillon");
+    boutons = await page.locator('button:has-text("Vérifier et publier")').count();
+  }
+  await page.locator('button:has-text("Vérifier et publier")').first().click();
+  await page.waitForLoadState("networkidle");
+  await page.goto(BASE + "/annuaire?pays=DZ");
+  verifier("Le second transporteur est publié",
+    (await texte(page)).includes(TRANS2.raison));
+
+  /* Le client passe par la fiche : la demande est adressée à cette entreprise. */
+  await connecter(page, CLIENT.email, CLIENT.mdp);
+  await page.goto(BASE + "/transporteur/1");
+  await page.locator('aside a:has-text("Demander un devis")').first().click();
+  await page.waitForLoadState("networkidle");
+  verifier("Le client est prévenu que la demande ira à cette seule entreprise",
+    (await texte(page)).includes("et à elle seule"));
+  await choisir(page, "depart", "Alger");
+  await choisir(page, "arrivee", "Constantine");
+  await page.fill('input[name="nature"]', "Lot de pièces détachées");
+  await page.click('form.carte button[type="submit"]');
+  /* L'action serveur redirige côté client : le réseau se calme avant que la
+     navigation ne soit terminée, il faut attendre l'adresse elle-même. */
+  await page.waitForURL(/\/demande\/\d+/, { timeout: 10000 }).catch(() => {});
+  verifier("La demande adressée est créée", /\/demande\/\d+/.test(page.url()), page.url());
+
+  await connecter(page, TRANS.email, TRANS.mdp);
+  await page.goto(BASE + "/espace/demandes");
+  t = await texte(page);
+  verifier("L'entreprise choisie reçoit la demande", t.includes("Lot de pièces détachées"));
+  verifier("Elle voit qu'elle lui est adressée", t.includes("vous est adressée"));
+
+  await connecter(page, TRANS2.email, TRANS2.mdp);
+  verifier("Aucun autre transporteur ne la voit",
+    !(await texte(page)).includes("Lot de pièces détachées"));
+  await page.goto(BASE + "/espace/demandes");
+  verifier("Elle n'apparaît pas dans sa liste",
+    !(await texte(page)).includes("Lot de pièces détachées"));
 } catch (e) {
   ko++;
   echecs.push("Exception : " + e.message);

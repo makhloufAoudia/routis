@@ -1,5 +1,6 @@
 import "server-only";
-import { compter } from "./db";
+import { compter, ligne } from "./db";
+import { DEMANDE_VISIBLE } from "./diffusion";
 import type { Utilisateur } from "./auth";
 
 /**
@@ -25,13 +26,21 @@ export async function enAttente(u: Utilisateur | null): Promise<Attente> {
     if (u.role === "transporteur") {
       // Les demandes que ce transporteur peut encore prendre : ouvertes, dans un
       // service qu'il propose, et auxquelles il n'a pas déjà répondu.
+      const t = await ligne<{ id: number; pays: string; services: string[] }>(
+        `SELECT t.id, t.pays,
+                COALESCE(array_agg(ts.service) FILTER (WHERE ts.service IS NOT NULL),
+                         ARRAY['fret','pax']) AS services
+         FROM transporteurs t
+         LEFT JOIN transporteur_services ts ON ts.transporteur_id=t.id
+         WHERE t.utilisateur_id=$1 AND t.statut='verifie'
+         GROUP BY t.id, t.pays`, [u.id]);
+      if (!t) return null;
       const n = await compter(
         `SELECT COUNT(*) FROM demandes d
-         JOIN transporteurs t ON t.utilisateur_id=$1 AND t.statut='verifie'
          WHERE d.statut IN ('ouverte','devis')
-           AND d.type IN (SELECT service FROM transporteur_services WHERE transporteur_id=t.id)
-           AND NOT EXISTS (SELECT 1 FROM devis q WHERE q.demande_id=d.id AND q.transporteur_id=t.id)`,
-        [u.id]
+           AND ${DEMANDE_VISIBLE}
+           AND NOT EXISTS (SELECT 1 FROM devis q WHERE q.demande_id=d.id AND q.transporteur_id=$1)`,
+        [t.id, t.services, t.pays]
       );
       return n ? { nombre: n, lien: "/espace/demandes", libelle: "demande(s) à traiter" } : null;
     }
