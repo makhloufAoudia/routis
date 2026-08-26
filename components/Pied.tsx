@@ -8,7 +8,7 @@ export default function Pied() {
           <p className="cta">Commencer avec <span>routis</span> aujourd&apos;hui.</p>
           <p className="small">Trouvez un transporteur vérifié, obtenez un prix ferme, suivez votre mission.
             Inscription gratuite.</p>
-          <p><Link className="btn" href="/inscription?type=transporteur">Inscrire mon entreprise</Link></p>
+          <p><Link className="btn" href="/devis">Demander un devis</Link></p>
         </div>
         <div>
           <h4>Clients</h4>
@@ -19,7 +19,6 @@ export default function Pied() {
         </div>
         <div>
           <h4>Transporteurs</h4>
-          <Link href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
           <Link href="/espace">Mon espace</Link>
           <Link href="/page/documents">Documents à fournir</Link>
           <Link href="/page/commission">Commission et facturation</Link>

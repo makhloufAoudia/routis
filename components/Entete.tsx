@@ -55,10 +55,6 @@ export default async function Entete() {
           <Link href="/annuaire">Annuaire</Link>
           <Link href="/devis?type=fret">Marchandises</Link>
           <Link href="/devis?type=pax">Personnes</Link>
-          <span className="sp" />
-          {(!u || u.role !== "transporteur") && (
-            <Link href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
-          )}
         </div>
       </nav>
     </>
