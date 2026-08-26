@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { utilisateur } from "@/lib/auth";
 import { estInstalle } from "@/lib/db";
+import BasculeTheme from "./BasculeTheme";
+import MenuCompact from "./MenuCompact";
 
 export default async function Entete() {
   const u = await utilisateur();
@@ -28,7 +30,8 @@ export default async function Entete() {
                    aria-label="Rechercher un transporteur" />
             <button type="submit" aria-label="Rechercher">⌕</button>
           </form>
-          <nav className="gnav">
+          <BasculeTheme />
+          <MenuCompact>
             <Link href="/devis">Demander un devis</Link>
             {u ? (
               <>
@@ -43,7 +46,7 @@ export default async function Entete() {
                 <Link href="/connexion">Connexion</Link>
               </>
             )}
-          </nav>
+          </MenuCompact>
         </div>
       </div>
 
