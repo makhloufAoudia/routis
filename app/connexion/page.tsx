@@ -61,8 +61,12 @@ export default async function Page({
           <Link href="/mot-de-passe-oublie">Mot de passe oublié ?</Link>
         </p>
       </form>
-      <p className="small muted">
-        Pas encore de compte ? <Link href="/inscription">Créer un compte client</Link> ·{" "}
+      {/* Chaque choix reste d'un seul tenant : la ligne se coupe entre les deux
+          liens, jamais au milieu de « Inscrire mon entreprise ». */}
+      <p className="small muted choix-compte">
+        Pas encore de compte ?{" "}
+        <Link href="/inscription">Créer un compte client</Link>
+        <span aria-hidden="true"> · </span>
         <Link href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
       </p>
     </div>
