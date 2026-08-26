@@ -152,7 +152,8 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="telephone">Téléphone</label>
-            <input id="telephone" name="telephone" type="tel" defaultValue={t.telephone} placeholder=" " />
+            <input id="telephone" name="telephone" type="tel" defaultValue={t.telephone}
+                   autoComplete="tel" placeholder=" " />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="site_web">Site internet</label>

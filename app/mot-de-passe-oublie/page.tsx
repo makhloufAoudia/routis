@@ -59,7 +59,7 @@ export default async function Page({
           <form action={demander} className="carte">
             <div className="champ">
               <label className="ch" htmlFor="email">Adresse e-mail</label>
-              <input id="email" name="email" type="email" required autoFocus placeholder=" " />
+              <input id="email" name="email" type="email" required autoFocus autoComplete="email" placeholder=" " />
             </div>
             <button className="btn pleine" type="submit">Envoyer le lien</button>
           </form>

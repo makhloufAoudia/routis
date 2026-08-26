@@ -74,7 +74,8 @@ export default async function Page({
         <input type="hidden" name="jeton" value={sp.jeton ?? ""} />
         <div className="champ">
           <label className="ch" htmlFor="mot_de_passe">Nouveau mot de passe</label>
-          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required autoFocus placeholder=" " />
+          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required autoFocus
+                 autoComplete="new-password" placeholder=" " />
           <div className="aide">8 caractères minimum.</div>
         </div>
         <div className="champ">

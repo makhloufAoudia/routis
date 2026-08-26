@@ -49,11 +49,12 @@ export default async function Page({
         <input type="hidden" name="suite" value={sp.suite ?? ""} />
         <div className="champ">
           <label className="ch" htmlFor="email">Adresse e-mail</label>
-          <input id="email" name="email" type="email" required autoFocus placeholder=" " />
+          <input id="email" name="email" type="email" required autoFocus autoComplete="username" placeholder=" " />
         </div>
         <div className="champ">
           <label className="ch" htmlFor="mot_de_passe">Mot de passe</label>
-          <input id="mot_de_passe" name="mot_de_passe" type="password" required placeholder=" " />
+          <input id="mot_de_passe" name="mot_de_passe" type="password" required
+                 autoComplete="current-password" placeholder=" " />
         </div>
         <button className="btn pleine" type="submit">Se connecter</button>
         <p className="small" style={{ margin: "12px 0 0", textAlign: "center" }}>
