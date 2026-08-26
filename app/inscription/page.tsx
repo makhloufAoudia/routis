@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import ChoixTypeCompte from "@/components/ChoixTypeCompte";
 import { utilisateur, creerCompte, ouvrirSession } from "@/lib/auth";
 import { q } from "@/lib/db";
 
@@ -41,23 +42,15 @@ export default async function Page({
 
   return (
     <div style={{ maxWidth: 560, margin: "0 auto" }}>
-      <h1>{type === "transporteur" ? "Inscrire mon entreprise" : "Créer un compte"}</h1>
+      <h1>Créer un compte</h1>
       <p className="lede">
-        {type === "transporteur"
-          ? "Créez votre compte, complétez votre fiche puis déposez vos documents. Votre entreprise apparaîtra dans l'annuaire une fois les pièces validées."
-          : "Un compte suffit pour déposer une demande et recevoir des devis."}
+        Le type de compte se choisit maintenant et ne pourra plus être modifié
+        ensuite : c&apos;est lui qui décide de ce que vous pourrez faire sur le site.
       </p>
       {sp.erreur && <div className="msg err">{sp.erreur}</div>}
 
       <form action={inscrire} className="carte">
-        <input type="hidden" name="type" value={type} />
-        {type === "transporteur" && (
-          <div className="champ">
-            <label className="ch" htmlFor="raison_sociale">Raison sociale</label>
-            <input id="raison_sociale" name="raison_sociale" required autoComplete="organization" placeholder=" " />
-            <div className="aide">Le nom exact figurant sur votre registre de commerce.</div>
-          </div>
-        )}
+        <ChoixTypeCompte defaut={type} />
         <div className="champ">
           <label className="ch" htmlFor="nom">
             {type === "transporteur" ? "Nom du responsable" : "Votre nom"}

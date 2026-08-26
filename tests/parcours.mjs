@@ -103,6 +103,23 @@ try {
     verifier(`Inscription ${type}`, !u.includes("erreur="), u);
   }
 
+  /* Le type de compte doit être visible et modifiable sur le formulaire lui-même :
+     c'est un choix définitif, personne ne doit le subir sans le voir. */
+  await page.goto(BASE + "/deconnexion");
+  await page.goto(BASE + "/inscription");
+  verifier("Le formulaire propose les deux types de compte",
+    (await page.locator('.choix-role input[name="type"]').count()) === 2);
+  verifier("Par défaut, c'est un compte client",
+    await page.locator('.choix-role input[value="client"]').isChecked());
+  verifier("La raison sociale est masquée pour un client",
+    !(await page.locator('input[name="raison_sociale"]').isVisible()));
+  await page.locator('.choix-role input[value="transporteur"]').check();
+  verifier("Choisir « transporteur » fait apparaître la raison sociale",
+    await page.locator('input[name="raison_sociale"]').isVisible());
+  await page.goto(BASE + "/inscription?type=transporteur");
+  verifier("Le lien direct pré-sélectionne le compte transporteur",
+    await page.locator('.choix-role input[value="transporteur"]').isChecked());
+
   await page.goto(BASE + "/deconnexion");
   await page.goto(BASE + "/inscription?type=client");
   await page.fill('input[name="nom"]', "Doublon");

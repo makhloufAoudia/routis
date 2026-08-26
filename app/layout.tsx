@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <noscript>
           {/* Sans JavaScript le bouton du menu ne peut rien ouvrir :
               on affiche les liens en permanence. */}
-          <style>{".menu-b{display:none !important}.gnav{display:flex !important}"}</style>
+          <style>{".menu-b{display:none !important}.gnav{display:flex !important}.si-pro{display:block !important}"}</style>
         </noscript>
         <Entete />
         <main>{children}</main>
