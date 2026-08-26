@@ -160,10 +160,21 @@ export default async function Page({ searchParams }: { searchParams: Promise<Par
             </div>
 
             <h3>Ville</h3>
-            <div className="champ">
-              <ListeFiltrable nom="ville" valeur={String(villeId || "")} vide="Toutes les villes"
-                              options={villesDispo.map((v) => ({ v: String(v.id), l: v.nom, sous: String(v.n) }))} />
-            </div>
+            {/* Le filtre ne liste que les villes où une entreprise est publiée : proposer
+                une ville sans transporteur mènerait à une page de résultats vide.
+                Tant qu'aucune entreprise n'est vérifiée, on le dit au lieu de laisser
+                une liste vide qui ressemble à une panne. */}
+            {villesDispo.length > 0 ? (
+              <div className="champ">
+                <ListeFiltrable nom="ville" valeur={String(villeId || "")} vide="Toutes les villes"
+                                options={villesDispo.map((v) => ({ v: String(v.id), l: v.nom, sous: String(v.n) }))} />
+              </div>
+            ) : (
+              <p className="aide" style={{ marginTop: 0 }}>
+                Aucune ville à proposer pour l&apos;instant : la liste se remplit avec les
+                villes des entreprises vérifiées.
+              </p>
+            )}
 
             <h3>Type de service</h3>
             {Object.entries(SERVICES).map(([k, lab]) => (
