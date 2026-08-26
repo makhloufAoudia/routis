@@ -172,16 +172,16 @@ export default async function Page({
           <h2 style={{ marginTop: 0 }}>Votre compte administrateur</h2>
           <div className="champ">
             <label className="ch" htmlFor="nom">Nom complet</label>
-            <input id="nom" name="nom" required />
+            <input id="nom" name="nom" required placeholder=" " />
           </div>
           <div className="grille g2">
             <div className="champ">
               <label className="ch" htmlFor="email">Adresse e-mail</label>
-              <input id="email" name="email" type="email" required />
+              <input id="email" name="email" type="email" required placeholder=" " />
             </div>
             <div className="champ">
               <label className="ch" htmlFor="mot_de_passe">Mot de passe</label>
-              <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required />
+              <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required placeholder=" " />
               <div className="aide">8 caractères minimum.</div>
             </div>
           </div>

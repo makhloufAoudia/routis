@@ -110,7 +110,7 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="raison_sociale">Raison sociale</label>
-            <input id="raison_sociale" name="raison_sociale" defaultValue={t.raison_sociale} required />
+            <input id="raison_sociale" name="raison_sociale" defaultValue={t.raison_sociale} required placeholder=" " />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="forme">Forme juridique</label>
@@ -120,12 +120,12 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="registre">N° de registre de commerce</label>
-            <input id="registre" name="registre" defaultValue={t.registre} />
+            <input id="registre" name="registre" defaultValue={t.registre} placeholder=" " />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="annee_creation">Année de création</label>
             <input id="annee_creation" name="annee_creation" type="number" min={1900}
-                   max={new Date().getFullYear()} defaultValue={t.annee_creation ?? ""} />
+                   max={new Date().getFullYear()} defaultValue={t.annee_creation ?? ""} placeholder=" " />
           </div>
         </div>
         <div className="grille g2">
@@ -149,12 +149,12 @@ export default async function Page({
         </div>
         <div className="champ">
           <label className="ch" htmlFor="adresse">Adresse</label>
-          <input id="adresse" name="adresse" defaultValue={t.adresse} />
+          <input id="adresse" name="adresse" defaultValue={t.adresse} placeholder=" " />
         </div>
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="telephone">Téléphone</label>
-            <input id="telephone" name="telephone" type="tel" defaultValue={t.telephone} />
+            <input id="telephone" name="telephone" type="tel" defaultValue={t.telephone} placeholder=" " />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="site_web">Site internet</label>

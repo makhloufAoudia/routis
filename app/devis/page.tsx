@@ -177,15 +177,15 @@ export default async function Page({
           <div className="grille g3">
             <div className="champ">
               <label className="ch" htmlFor="poids">Poids (kg)</label>
-              <input id="poids" name="poids" type="number" min="0" step="1" />
+              <input id="poids" name="poids" type="number" min="0" step="1" placeholder=" " />
             </div>
             <div className="champ">
               <label className="ch" htmlFor="volume">Volume (m³)</label>
-              <input id="volume" name="volume" type="number" min="0" step="0.1" />
+              <input id="volume" name="volume" type="number" min="0" step="0.1" placeholder=" " />
             </div>
             <div className="champ">
               <label className="ch" htmlFor="palettes">Palettes</label>
-              <input id="palettes" name="palettes" type="number" min="0" step="1" />
+              <input id="palettes" name="palettes" type="number" min="0" step="1" placeholder=" " />
             </div>
           </div>
           <label className="ch">Besoins particuliers</label>
@@ -201,7 +201,7 @@ export default async function Page({
           <legend>Personnes</legend>
           <div className="champ" style={{ maxWidth: 220 }}>
             <label className="ch" htmlFor="passagers">Nombre de passagers</label>
-            <input id="passagers" name="passagers" type="number" min="1" max="60" />
+            <input id="passagers" name="passagers" type="number" min="1" max="60" placeholder=" " />
           </div>
         </fieldset>
 

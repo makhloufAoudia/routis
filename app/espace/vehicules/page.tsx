@@ -129,25 +129,25 @@ export default async function Page({
             </div>
             <div className="champ">
               <label className="ch" htmlFor="immatriculation">Immatriculation</label>
-              <input id="immatriculation" name="immatriculation" />
+              <input id="immatriculation" name="immatriculation" placeholder=" " />
             </div>
             <div className="grille g2">
               <div className="champ"><label className="ch" htmlFor="marque">Marque</label>
-                <input id="marque" name="marque" /></div>
+                <input id="marque" name="marque" placeholder=" " /></div>
               <div className="champ"><label className="ch" htmlFor="modele">Modèle</label>
-                <input id="modele" name="modele" /></div>
+                <input id="modele" name="modele" placeholder=" " /></div>
             </div>
             <div className="grille g2">
               <div className="champ"><label className="ch" htmlFor="annee">Année</label>
-                <input id="annee" name="annee" type="number" min={1970} max={new Date().getFullYear() + 1} /></div>
+                <input id="annee" name="annee" type="number" min={1970} max={new Date().getFullYear() + 1} placeholder=" " /></div>
               <div className="champ"><label className="ch" htmlFor="charge_kg">Charge utile (kg)</label>
-                <input id="charge_kg" name="charge_kg" type="number" min={0} /></div>
+                <input id="charge_kg" name="charge_kg" type="number" min={0} placeholder=" " /></div>
             </div>
             <div className="grille g2">
               <div className="champ"><label className="ch" htmlFor="volume_m3">Volume (m³)</label>
-                <input id="volume_m3" name="volume_m3" type="number" min={0} step={0.1} /></div>
+                <input id="volume_m3" name="volume_m3" type="number" min={0} step={0.1} placeholder=" " /></div>
               <div className="champ"><label className="ch" htmlFor="places">Places</label>
-                <input id="places" name="places" type="number" min={0} /></div>
+                <input id="places" name="places" type="number" min={0} placeholder=" " /></div>
             </div>
             <button className="btn pleine" type="submit">Ajouter</button>
           </form>

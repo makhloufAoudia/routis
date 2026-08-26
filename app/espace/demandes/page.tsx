@@ -164,20 +164,20 @@ export default async function Page({
             <form action={repondre}
                   style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end", marginTop: 10 }}>
               <input type="hidden" name="demande_id" value={d.id} />
-              <div style={{ width: 170 }}>
+              <div className="champ" style={{ width: 170, marginBottom: 0 }}>
                 <label className="ch">Votre prix</label>
                 <input name="prix" type="text" inputMode="decimal"
-                       defaultValue={d.mon_prix ?? ""} required />
+                       defaultValue={d.mon_prix ?? ""} required placeholder=" " />
               </div>
-              <div style={{ width: 200 }}>
+              <div className="champ" style={{ width: 200, marginBottom: 0 }}>
                 <label className="ch">Délai proposé</label>
                 <input name="delai" defaultValue={d.mon_delai ?? ""} placeholder="Ex. enlèvement demain" />
               </div>
-              <div style={{ width: 170 }}>
+              <div className="champ" style={{ width: 170, marginBottom: 0 }}>
                 <label className="ch">Valable jusqu&apos;au</label>
                 <input name="valide_jusqu_au" type="date" defaultValue={d.mon_valide ?? ""} />
               </div>
-              <div style={{ flex: 1, minWidth: 220 }}>
+              <div className="champ" style={{ flex: 1, minWidth: 220, marginBottom: 0 }}>
                 <label className="ch">Message</label>
                 <input name="message" defaultValue={d.mon_message ?? ""}
                        placeholder="Conditions, véhicule proposé…" />

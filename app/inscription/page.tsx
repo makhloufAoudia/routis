@@ -54,7 +54,7 @@ export default async function Page({
         {type === "transporteur" && (
           <div className="champ">
             <label className="ch" htmlFor="raison_sociale">Raison sociale</label>
-            <input id="raison_sociale" name="raison_sociale" required />
+            <input id="raison_sociale" name="raison_sociale" required placeholder=" " />
             <div className="aide">Le nom exact figurant sur votre registre de commerce.</div>
           </div>
         )}
@@ -62,21 +62,21 @@ export default async function Page({
           <label className="ch" htmlFor="nom">
             {type === "transporteur" ? "Nom du responsable" : "Votre nom"}
           </label>
-          <input id="nom" name="nom" required />
+          <input id="nom" name="nom" required placeholder=" " />
         </div>
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="email">Adresse e-mail</label>
-            <input id="email" name="email" type="email" required />
+            <input id="email" name="email" type="email" required placeholder=" " />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="telephone">Téléphone</label>
-            <input id="telephone" name="telephone" type="tel" />
+            <input id="telephone" name="telephone" type="tel" placeholder=" " />
           </div>
         </div>
         <div className="champ">
           <label className="ch" htmlFor="mot_de_passe">Mot de passe</label>
-          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required />
+          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required placeholder=" " />
           <div className="aide">8 caractères minimum.</div>
         </div>
         <button className="btn pleine" type="submit">Créer mon compte</button>

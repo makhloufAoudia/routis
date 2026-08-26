@@ -74,12 +74,12 @@ export default async function Page({
         <input type="hidden" name="jeton" value={sp.jeton ?? ""} />
         <div className="champ">
           <label className="ch" htmlFor="mot_de_passe">Nouveau mot de passe</label>
-          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required autoFocus />
+          <input id="mot_de_passe" name="mot_de_passe" type="password" minLength={8} required autoFocus placeholder=" " />
           <div className="aide">8 caractères minimum.</div>
         </div>
         <div className="champ">
           <label className="ch" htmlFor="confirmation">Confirmation</label>
-          <input id="confirmation" name="confirmation" type="password" minLength={8} required />
+          <input id="confirmation" name="confirmation" type="password" minLength={8} required placeholder=" " />
         </div>
         <button className="btn pleine" type="submit">Enregistrer</button>
       </form>

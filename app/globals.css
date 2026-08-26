@@ -74,7 +74,62 @@ p{margin:0 0 12px}
 
 /* ---------- formulaires ---------- */
 label.ch{display:block;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:0 0 5px}
-.ctl,input[type=text],input[type=email],input[type=tel],input[type=password],input[type=number],input[type=date],select,textarea{
+
+/* --- Libellés flottants ---------------------------------------------------
+   Le libellé occupe le champ tant qu'il est vide, puis remonte en petit dès
+   qu'on écrit. On ne l'active que si le navigateur comprend :has() ; ailleurs,
+   le libellé classique au-dessus du champ reste en place et rien ne casse. */
+@supports selector(:has(*)) {
+  .champ:has(> input:not([type=radio]):not([type=checkbox])),
+  .champ:has(> select),
+  .champ:has(> textarea){position:relative}
+
+  .champ:has(> input:not([type=radio]):not([type=checkbox])) > label.ch,
+  .champ:has(> select) > label.ch,
+  .champ:has(> textarea) > label.ch{
+    position:absolute;left:14px;top:15px;margin:0;z-index:1;
+    font-size:15.5px;font-weight:400;color:var(--ink-3);
+    max-width:calc(100% - 30px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    pointer-events:none;transform-origin:left top;
+    transition:transform .13s ease,color .13s ease,font-weight .13s ease;
+  }
+
+  .champ > input:not([type=radio]):not([type=checkbox]),
+  .champ > select,
+  .champ > textarea{padding-top:23px;padding-bottom:5px}
+  .champ > textarea{padding-top:25px;min-height:124px}
+
+  /* L'indication ne s'affiche qu'une fois le champ actif : sinon elle
+     entrerait en concurrence avec le libellé. */
+  .champ > input::placeholder,
+  .champ > textarea::placeholder{color:transparent}
+  .champ > input:focus::placeholder,
+  .champ > textarea:focus::placeholder{color:var(--ink-3)}
+
+  /* Position haute : champ actif, champ rempli, ou champ qui affiche déjà
+     quelque chose de lui-même (liste déroulante, date, fichier). */
+  .champ:has(> input:focus) > label.ch,
+  .champ:has(> textarea:focus) > label.ch,
+  .champ:has(> select:focus) > label.ch,
+  .champ:has(> input:not(:placeholder-shown)) > label.ch,
+  .champ:has(> textarea:not(:placeholder-shown)) > label.ch,
+  .champ:has(> select) > label.ch,
+  .champ:has(> input[type=date]) > label.ch,
+  .champ:has(> input[type=file]) > label.ch{
+    transform:translateY(-9px) scale(.78);
+    font-weight:600;
+  }
+
+  .champ:has(> input:focus) > label.ch,
+  .champ:has(> textarea:focus) > label.ch,
+  .champ:has(> select:focus) > label.ch{color:var(--act)}
+
+  /* Un champ en erreur signale aussi par son libellé, pas seulement par sa bordure. */
+  .champ:has(> .champ-err) > label.ch{color:var(--warn)}
+}
+/* input:not([type]) : sans cette ligne, un champ sans attribut type restait
+   à la largeur par défaut du navigateur au lieu de remplir sa colonne. */
+.ctl,input:not([type]),input[type=text],input[type=email],input[type=tel],input[type=password],input[type=number],input[type=date],select,textarea{
   width:100%;padding:11px 13px;font:inherit;font-size:15.5px;color:var(--ink);
   background:#fff;border:1px solid var(--rule-2);border-radius:6px;font-family:inherit;
 }
