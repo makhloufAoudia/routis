@@ -135,7 +135,7 @@ export default async function Page({
         </div>
       )}
 
-      <form action={deposer} className="carte" autoComplete="off">
+      <form action={deposer} className={"carte " + (type === "pax" ? "t-pax" : "t-fret")} autoComplete="off">
         <input type="hidden" name="transporteur" value={cibleId || ""} />
 
         <label className="ch">Type de transport</label>
@@ -216,6 +216,22 @@ export default async function Page({
 
         <button className="btn pleine" type="submit">Envoyer ma demande</button>
       </form>
+
+      {/* Trois lignes de JavaScript ordinaire, sans attendre React : au
+          changement de bouton, la classe du formulaire suit, et c'est elle qui
+          décide de la section visible. Si ce script ne s'exécute pas, la règle
+          de style « :checked ~ » prend le relais ; si elle non plus, la section
+          juste est tout de même celle du départ. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "document.querySelectorAll('form.t-fret,form.t-pax')" +
+            ".forEach(function(f){f.classList.add('pilote');});" +
+            "document.addEventListener('change',function(e){var t=e.target;" +
+            "if(t&&t.name==='type'&&t.form){t.form.classList.toggle('t-fret',t.value==='fret');" +
+            "t.form.classList.toggle('t-pax',t.value==='pax');}},true);",
+        }}
+      />
     </div>
   );
 }

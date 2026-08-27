@@ -212,6 +212,11 @@ legend{font-weight:700;font-size:15px;padding:0 6px}
 .bascule-lab{font-size:14.5px;cursor:pointer;margin-right:22px}
 #t-fret:checked ~ .sect-pax,
 #t-pax:checked ~ .sect-fret{display:none}
+/* Même consigne, portée par la classe du formulaire. Elle ne vaut qu'une fois
+   le petit script en place (classe « pilote ») : sans lui, la classe resterait
+   figée sur le type de départ et masquerait les deux sections. */
+form.pilote.t-fret .sect-pax,
+form.pilote.t-pax .sect-fret{display:none}
 
 .coche{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:14.5px;cursor:pointer}
 .coche input{width:17px;height:17px;accent-color:var(--act);margin:0;flex:none}
