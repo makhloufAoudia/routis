@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, journal, compter } from "@/lib/db";
+import { villesDuPays } from "@/lib/villes";
 import { SERVICES, EQUIPEMENTS, COUVERTURES, EFFECTIFS } from "@/lib/metier";
 
 export const dynamic = "force-dynamic";
@@ -87,8 +88,7 @@ export default async function Page({
 
   const [paysListe, villes, mesServices, mesEquips] = await Promise.all([
     q<{ code: string; nom: string }>(`SELECT code, nom FROM pays ORDER BY nom`),
-    q<{ id: number; nom: string }>(
-      `SELECT id, nom FROM villes WHERE pays=$1 ORDER BY population DESC LIMIT 400`, [paysAffiche]),
+    villesDuPays(paysAffiche),
     q<{ service: string }>(`SELECT service FROM transporteur_services WHERE transporteur_id=$1`, [t.id]),
     q<{ equipement: string }>(`SELECT equipement FROM transporteur_equipements WHERE transporteur_id=$1`, [t.id]),
   ]);

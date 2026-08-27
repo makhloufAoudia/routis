@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import ChoixTransport from "@/components/ChoixTransport";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
-import { q, ligne, journal } from "@/lib/db";
+import { ligne, journal } from "@/lib/db";
+import { villesDuPays } from "@/lib/villes";
 import { EQUIPEMENTS, distanceKm, nouvelleReference } from "@/lib/metier";
 import { mailNouvelleDemande } from "@/lib/notifications";
 
@@ -101,10 +102,10 @@ export default async function Page({
     : null;
 
   const pays = cible?.pays ?? "DZ";
-  const villes = await q<{ id: number; nom: string }>(
-    `SELECT id, nom FROM villes WHERE pays=$1 ORDER BY population DESC LIMIT 400`,
-    [pays]
-  );
+  const villes = await villesDuPays(pays);
+  // Une seule liste d'options pour les deux champs : la même référence n'est
+  // envoyée au navigateur qu'une fois, au lieu d'être dupliquée.
+  const options = villes.map((v) => ({ v: String(v.id), l: v.nom }));
 
   const messages: Record<string, string> = {
     villes: "Choisissez une ville de départ et une ville d'arrivée dans la liste.",
@@ -145,13 +146,11 @@ export default async function Page({
               <div className="grille g2">
                 <div className="champ">
                   <label className="ch" htmlFor="depart">Ville de départ</label>
-                  <ListeFiltrable id="depart" nom="depart" requis
-                                  options={villes.map((v) => ({ v: String(v.id), l: v.nom }))} />
+                  <ListeFiltrable id="depart" nom="depart" requis options={options} />
                 </div>
                 <div className="champ">
                   <label className="ch" htmlFor="arrivee">Ville d&apos;arrivée</label>
-                  <ListeFiltrable id="arrivee" nom="arrivee" requis
-                                  options={villes.map((v) => ({ v: String(v.id), l: v.nom }))} />
+                  <ListeFiltrable id="arrivee" nom="arrivee" requis options={options} />
                 </div>
               </div>
 
