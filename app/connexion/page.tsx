@@ -61,14 +61,15 @@ export default async function Page({
           <Link href="/mot-de-passe-oublie">Mot de passe oublié ?</Link>
         </p>
       </form>
-      {/* Chaque choix reste d'un seul tenant : la ligne se coupe entre les deux
-          liens, jamais au milieu de « Inscrire mon entreprise ». */}
-      <p className="small muted choix-compte">
-        Pas encore de compte ?{" "}
-        <Link href="/inscription">Créer un compte client</Link>
-        <span aria-hidden="true"> · </span>
-        <Link href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
-      </p>
+      {/* Deux publics, deux inscriptions : chacune sur sa ligne, et de couleurs
+          différentes pour qu'on ne prenne pas l'une pour l'autre. */}
+      <p className="small muted" style={{ marginBottom: 8 }}>Pas encore de compte ?</p>
+      <div className="choix-compte">
+        <Link className="btn pleine" href="/inscription">Créer un compte client</Link>
+        <Link className="btn sec pleine" href="/inscription?type=transporteur">
+          Inscrire mon entreprise
+        </Link>
+      </div>
     </div>
   );
 }

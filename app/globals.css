@@ -258,7 +258,9 @@ input:-webkit-autofill:active{
   transition:background-color 9999s ease-out 0s;
 }
 
-.choix-compte a{white-space:nowrap}
+/* Les deux inscriptions : une par ligne, jamais coupées en deux. */
+.choix-compte{display:grid;gap:10px;max-width:420px}
+.choix-compte a{white-space:nowrap;text-align:center}
 
 /* ---------- choix du type de compte ---------- */
 .choix-role{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));
