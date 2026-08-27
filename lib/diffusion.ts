@@ -1,4 +1,5 @@
 import "server-only";
+import { compter } from "./db";
 
 /**
  * Qui voit une demande — la règle, écrite une seule fois.
@@ -42,3 +43,26 @@ export const DEMANDE_VISIBLE = `(
       )
     )
   )`;
+
+/**
+ * Combien d'entreprises verront la demande, avant même qu'elle soit écrite.
+ *
+ * Le client remplissait le formulaire sans savoir s'il s'adressait à une
+ * entreprise ou à trente. La même condition que ci-dessus, comptée à l'avance.
+ */
+export async function compterDestinataires(
+  type: string, paysDepart: string, international: boolean
+): Promise<number> {
+  try {
+    return await compter(
+      `SELECT COUNT(DISTINCT t.id) FROM transporteurs t
+       JOIN transporteur_services ts ON ts.transporteur_id=t.id
+       WHERE t.statut='verifie' AND ts.service=$1 AND t.pays=$2
+         AND ($3::boolean = false OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']))`,
+      [type, paysDepart, international]
+    );
+  } catch {
+    // Un compte indisponible ne doit pas empêcher de demander un devis.
+    return -1;
+  }
+}

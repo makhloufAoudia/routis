@@ -4,6 +4,7 @@ import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
 import { ligne, journal } from "@/lib/db";
 import { villesDuPays, listePays } from "@/lib/villes";
+import { compterDestinataires } from "@/lib/diffusion";
 import { EQUIPEMENTS, distanceKm, nouvelleReference } from "@/lib/metier";
 import { mailNouvelleDemande } from "@/lib/notifications";
 
@@ -130,6 +131,10 @@ export default async function Page({
     ? optionsDepart
     : villesArrivee.map((v) => ({ v: String(v.id), l: v.nom }));
 
+  // Combien d'entreprises recevront la demande : le client doit le savoir avant
+  // d'écrire, pas après. Inutile quand la demande est adressée à une seule.
+  const destinataires = cible ? -1 : await compterDestinataires(type, paysDepart, international);
+
   const messages: Record<string, string> = {
     villes: "Choisissez une ville de départ et une ville d'arrivée dans la liste.",
     identiques: "Le départ et l'arrivée sont identiques.",
@@ -143,6 +148,18 @@ export default async function Page({
         Décrivez votre besoin. Les transporteurs vérifiés qui correspondent vous enverront un
         prix ferme.
       </p>
+
+      {destinataires >= 0 && (
+        <p className={destinataires === 0 ? "msg att" : "msg info"}>
+          {destinataires === 0
+            ? "Aucun transporteur vérifié ne correspond encore à ce trajet. Votre demande sera " +
+              "enregistrée et leur sera présentée dès qu’une entreprise s’inscrira."
+            : destinataires === 1
+              ? "Votre demande partira à 1 transporteur vérifié, le seul qui corresponde à ce trajet."
+              : `Votre demande partira aux ${destinataires} transporteurs vérifiés qui correspondent ` +
+                "à ce trajet. Vous comparerez leurs prix, sans engagement."}
+        </p>
+      )}
 
       {cible && (
         <div className="msg info">
