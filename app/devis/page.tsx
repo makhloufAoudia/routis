@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
@@ -84,17 +83,6 @@ async function deposer(formData: FormData) {
   redirect(`/demande/${cree!.id}`);
 }
 
-/* Écrits ici plutôt que dans la feuille de style : un style posé sur
-   l'élément l'emporte sur tout le reste, y compris sur une ancienne feuille
-   restée en mémoire du navigateur. */
-const BOUTON: CSSProperties = {
-  width: 17, height: 17, display: "inline-block", verticalAlign: "middle",
-  margin: "0 8px 0 0", accentColor: "var(--act)", flex: "none",
-};
-const ETIQUETTE: CSSProperties = {
-  display: "inline-block", marginRight: 22, fontSize: 14.5, cursor: "pointer",
-};
-
 export default async function Page({
   searchParams,
 }: {
@@ -147,29 +135,28 @@ export default async function Page({
         </div>
       )}
 
-      {/* Ces quelques règles voyagent avec la page, et non dans le fichier de
-          style commun : si le navigateur garde une ancienne version de ce
-          fichier, la bascule fonctionne quand même. */}
+      {/* La classe du formulaire décide de la section affichée. La règle voyage
+          avec la page, et non dans le fichier de style commun : une feuille
+          restée en mémoire du navigateur ne peut donc pas la faire disparaître. */}
       <style
         dangerouslySetInnerHTML={{
           __html:
-            "form.pilote.t-fret .sect-pax,form.pilote.t-pax .sect-fret{display:none!important}" +
-            "#t-fret:checked ~ .sect-pax,#t-pax:checked ~ .sect-fret{display:none!important}",
+            "form.t-fret .sect-pax,form.t-pax .sect-fret{display:none!important}",
         }}
       />
       <form action={deposer} className={"carte " + (type === "pax" ? "t-pax" : "t-fret")} autoComplete="off">
         <input type="hidden" name="transporteur" value={cibleId || ""} />
 
-        <label className="ch">Type de transport</label>
-        {/* Les deux boutons sont frères des sections : le passage de l'une à
-            l'autre est fait par la feuille de style, sans JavaScript, et vaut
-            donc dès la première image de la page. */}
-        <input key={"fret-" + type} type="radio" id="t-fret" name="type" value="fret"
-               defaultChecked={type === "fret"} style={BOUTON} />
-        <label htmlFor="t-fret" style={ETIQUETTE}>Marchandises</label>
-        <input key={"pax-" + type} type="radio" id="t-pax" name="type" value="pax"
-               defaultChecked={type === "pax"} style={BOUTON} />
-        <label htmlFor="t-pax" style={ETIQUETTE}>Personnes</label>
+        <input type="hidden" name="type" value={type} />
+
+        {/* Les deux phrases sont là toutes les deux ; la classe du formulaire
+            n’en laisse voir qu’une, comme pour les sections. */}
+        <p className="small muted sect-fret" style={{ marginTop: 0 }}>
+          Transport de marchandises. Pour des personnes, passez par l’onglet « Personnes » ci-dessus.
+        </p>
+        <p className="small muted sect-pax" style={{ marginTop: 0 }}>
+          Transport de personnes. Pour des marchandises, passez par l’onglet « Marchandises » ci-dessus.
+        </p>
 
         <div className="grille g2">
           <div className="champ">
@@ -239,23 +226,17 @@ export default async function Page({
         <button className="btn pleine" type="submit">Envoyer ma demande</button>
       </form>
 
-      {/* Trois lignes de JavaScript ordinaire, sans attendre React : au
-          changement de bouton, la classe du formulaire suit, et c'est elle qui
-          décide de la section visible. Si ce script ne s'exécute pas, la règle
-          de style « :checked ~ » prend le relais ; si elle non plus, la section
-          juste est tout de même celle du départ. */}
+      {/* Filet de sécurité : si la page servie ne correspondait pas au type
+          demandé dans l'adresse — une version gardée en réserve, par exemple —
+          ces trois lignes la remettent d'accord avec l'onglet choisi. */}
       <script
         dangerouslySetInnerHTML={{
           __html:
-            "document.querySelectorAll('form.t-fret,form.t-pax')" +
-            ".forEach(function(f){f.classList.add('pilote');});" +
-            "document.addEventListener('change',function(e){var t=e.target;" +
-            "if(t&&t.name==='type'&&t.form){t.form.classList.toggle('t-fret',t.value==='fret');" +
-            "t.form.classList.toggle('t-pax',t.value==='pax');}},true);" +
             "(function(){var v=new URLSearchParams(location.search).get('type');" +
-            "v=(v==='pax')?'pax':'fret';var b=document.getElementById('t-'+v);" +
-            "if(b&&!b.checked){b.checked=true;" +
-            "b.dispatchEvent(new Event('change',{bubbles:true}));}})();",
+            "v=(v==='pax')?'pax':'fret';" +
+            "document.querySelectorAll('form.t-fret,form.t-pax').forEach(function(f){" +
+            "f.classList.toggle('t-fret',v==='fret');f.classList.toggle('t-pax',v==='pax');" +
+            "var h=f.querySelector('input[name=type]');if(h)h.value=v;});})();",
         }}
       />
     </div>
