@@ -149,15 +149,17 @@ export default async function Page({
         prix ferme.
       </p>
 
-      {destinataires >= 0 && (
+      {/* Le client doit savoir à qui il s'adresse. Si le compte exact n'est pas
+          disponible, on le dit sans chiffre plutôt que de ne rien dire. */}
+      {!cible && (
         <p className={destinataires === 0 ? "msg att" : "msg info"}>
-          {destinataires === 0
-            ? "Aucun transporteur vérifié ne correspond encore à ce trajet. Votre demande sera " +
-              "enregistrée et leur sera présentée dès qu’une entreprise s’inscrira."
-            : destinataires === 1
-              ? "Votre demande partira à 1 transporteur vérifié, le seul qui corresponde à ce trajet."
-              : `Votre demande partira aux ${destinataires} transporteurs vérifiés qui correspondent ` +
-                "à ce trajet. Vous comparerez leurs prix, sans engagement."}
+          {destinataires < 0
+            ? "Votre demande partira à tous les transporteurs vérifiés qui correspondent à ce trajet. Vous comparerez leurs prix, sans engagement."
+            : destinataires === 0
+              ? "Aucun transporteur vérifié ne correspond encore à ce trajet. Votre demande sera enregistrée et leur sera présentée dès qu’une entreprise s’inscrira."
+              : destinataires === 1
+                ? "Votre demande partira à 1 transporteur vérifié, le seul qui corresponde à ce trajet."
+                : `Votre demande partira aux ${destinataires} transporteurs vérifiés qui correspondent à ce trajet. Vous comparerez leurs prix, sans engagement.`}
         </p>
       )}
 

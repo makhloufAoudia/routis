@@ -61,8 +61,10 @@ export async function compterDestinataires(
          AND ($3::boolean = false OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']))`,
       [type, paysDepart, international]
     );
-  } catch {
-    // Un compte indisponible ne doit pas empêcher de demander un devis.
+  } catch (e) {
+    // Un compte indisponible ne doit pas empêcher de demander un devis, mais il
+    // ne doit pas non plus disparaître sans laisser de trace.
+    console.error("compterDestinataires:", e);
     return -1;
   }
 }
