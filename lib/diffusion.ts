@@ -95,14 +95,22 @@ export async function listerDestinataires(
 ): Promise<Destinataire[]> {
   try {
     return await q<Destinataire>(
-      `SELECT DISTINCT t.id, t.raison_sociale, v.nom AS ville, t.note, t.couverture,
+      /* Une entreprise qui n'a déclaré aucun service est réputée faire les deux —
+         c'est déjà la règle appliquée à sa propre liste de demandes. Sans cette
+         tolérance, elle recevrait des demandes sans jamais figurer ici. */
+      `SELECT t.id, t.raison_sociale, v.nom AS ville, t.note, t.couverture,
               (SELECT COUNT(*) FROM demandes d2
                 JOIN devis q2 ON q2.demande_id=d2.id AND q2.transporteur_id=t.id
                WHERE d2.statut='terminee' AND q2.statut='accepte')::int AS nb_missions
          FROM transporteurs t
-         JOIN transporteur_services ts ON ts.transporteur_id=t.id
          LEFT JOIN villes v ON v.id=t.ville_id
-        WHERE t.statut='verifie' AND ts.service=$1 AND t.pays=$2
+        WHERE t.statut='verifie' AND t.pays=$2
+          AND (
+            EXISTS (SELECT 1 FROM transporteur_services ts
+                     WHERE ts.transporteur_id=t.id AND ts.service=$1)
+            OR NOT EXISTS (SELECT 1 FROM transporteur_services ts
+                            WHERE ts.transporteur_id=t.id)
+          )
           AND ($3::boolean = false OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']))
         ORDER BY t.note DESC, t.raison_sociale
         LIMIT 60`,

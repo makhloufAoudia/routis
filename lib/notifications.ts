@@ -97,8 +97,11 @@ export async function mailNouvelleDemande(
         `SELECT json_agg(json_build_object('email', u.email)) AS liste FROM (
            SELECT DISTINCT u.email FROM transporteurs t
            JOIN utilisateurs u ON u.id=t.utilisateur_id
-           JOIN transporteur_services ts ON ts.transporteur_id=t.id
-           WHERE t.statut='verifie' AND ts.service=$1
+           WHERE t.statut='verifie'
+             AND ( EXISTS (SELECT 1 FROM transporteur_services ts
+                            WHERE ts.transporteur_id=t.id AND ts.service=$1)
+                   OR NOT EXISTS (SELECT 1 FROM transporteur_services ts
+                                   WHERE ts.transporteur_id=t.id) )
              AND t.pays = (SELECT pays FROM villes WHERE id=$2)
              AND ( (SELECT pays FROM villes WHERE id=$3) = t.pays
                    OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']) )
