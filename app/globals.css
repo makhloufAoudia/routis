@@ -202,6 +202,15 @@ textarea{min-height:110px;resize:vertical}
 .aide{font-size:13px;color:var(--ink-3);margin-top:4px}
 fieldset{border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px;margin:0 0 16px}
 legend{font-weight:700;font-size:15px;padding:0 6px}
+/* --- Attente entre deux pages --------------------------------------------- */
+.patience{display:flex;align-items:center;gap:12px;color:var(--ink-2);font-size:15.5px}
+.rondelle{width:18px;height:18px;flex:none;border-radius:50%;
+  border:2px solid var(--rule-2);border-top-color:var(--act);animation:tourne .7s linear infinite}
+@keyframes tourne{to{transform:rotate(1turn)}}
+/* Le mouvement gêne certaines personnes : on le ralentit sans le supprimer,
+   sinon plus rien n'indiquerait que la page travaille. */
+@media(prefers-reduced-motion:reduce){.rondelle{animation-duration:2.4s}}
+
 .coche{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:14.5px;cursor:pointer}
 .coche input{width:17px;height:17px;accent-color:var(--act);margin:0;flex:none}
 
