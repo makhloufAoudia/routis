@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import ChoixTransport from "@/components/ChoixTransport";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
 import { ligne, journal } from "@/lib/db";
@@ -136,76 +135,78 @@ export default async function Page({
         </div>
       )}
 
-      <form action={deposer} className="carte">
+      <form action={deposer} className="carte" autoComplete="off">
         <input type="hidden" name="transporteur" value={cibleId || ""} />
 
-        <ChoixTransport
-          defaut={type}
-          commun={
-            <>
-              <div className="grille g2">
-                <div className="champ">
-                  <label className="ch" htmlFor="depart">Ville de départ</label>
-                  <ListeFiltrable id="depart" nom="depart" requis options={options} />
-                </div>
-                <div className="champ">
-                  <label className="ch" htmlFor="arrivee">Ville d&apos;arrivée</label>
-                  <ListeFiltrable id="arrivee" nom="arrivee" requis options={options} />
-                </div>
-              </div>
+        <label className="ch">Type de transport</label>
+        {/* Les deux boutons sont frères des sections : le passage de l'une à
+            l'autre est fait par la feuille de style, sans JavaScript, et vaut
+            donc dès la première image de la page. */}
+        <input className="bascule" type="radio" id="t-fret" name="type" value="fret"
+               defaultChecked={type === "fret"} />
+        <label className="bascule-lab" htmlFor="t-fret">Marchandises</label>
+        <input className="bascule" type="radio" id="t-pax" name="type" value="pax"
+               defaultChecked={type === "pax"} />
+        <label className="bascule-lab" htmlFor="t-pax">Personnes</label>
 
-              <div className="champ" style={{ maxWidth: 260 }}>
-                <label className="ch" htmlFor="date_souhaitee">Date souhaitée</label>
-                <input id="date_souhaitee" name="date_souhaitee" type="date" />
-              </div>
-            </>
-          }
-          marchandises={
-            <fieldset>
-              <legend>Marchandises</legend>
-              <div className="champ">
-                <label className="ch" htmlFor="nature">Nature de la marchandise</label>
-                <input id="nature" name="nature" placeholder="Ex. mobilier, palettes, matériaux…" />
-              </div>
-              <div className="grille g3">
-                <div className="champ">
-                  <label className="ch" htmlFor="poids">Poids (kg)</label>
-                  <input id="poids" name="poids" type="number" min="0" step="1" placeholder=" " />
-                </div>
-                <div className="champ">
-                  <label className="ch" htmlFor="volume">Volume (m³)</label>
-                  <input id="volume" name="volume" type="number" min="0" step="0.1" placeholder=" " />
-                </div>
-                <div className="champ">
-                  <label className="ch" htmlFor="palettes">Palettes</label>
-                  <input id="palettes" name="palettes" type="number" min="0" step="1" placeholder=" " />
-                </div>
-              </div>
-              <label className="ch">Besoins particuliers</label>
-              {Object.entries(EQUIPEMENTS).map(([k, lab]) => (
-                <label className="coche" key={k}>
-                  <input type="checkbox" name="equip" value={k} />
-                  <span>{lab}</span>
-                </label>
-              ))}
-            </fieldset>
-          }
-          personnes={
-            <fieldset>
-              <legend>Personnes</legend>
-              <div className="grille g2">
-                <div className="champ">
-                  <label className="ch" htmlFor="passagers">Nombre de passagers</label>
-                  <input id="passagers" name="passagers" type="number" min="1" max="60" placeholder=" " />
-                </div>
-                <div className="champ">
-                  <label className="ch" htmlFor="nature_pax">Motif du déplacement</label>
-                  <input id="nature_pax" name="nature_pax" placeholder="Ex. navette aéroport, transfert d’employés, mariage…" />
-                </div>
-              </div>
-            </fieldset>
-          }
-        />
+        <div className="grille g2">
+          <div className="champ">
+            <label className="ch" htmlFor="depart">Ville de départ</label>
+            <ListeFiltrable id="depart" nom="depart" requis options={options} />
+          </div>
+          <div className="champ">
+            <label className="ch" htmlFor="arrivee">Ville d&apos;arrivée</label>
+            <ListeFiltrable id="arrivee" nom="arrivee" requis options={options} />
+          </div>
+        </div>
+
+        <div className="champ" style={{ maxWidth: 260 }}>
+          <label className="ch" htmlFor="date_souhaitee">Date souhaitée</label>
+          <input id="date_souhaitee" name="date_souhaitee" type="date" />
+        </div>
+
+        <fieldset className="sect-fret">
+          <legend>Marchandises</legend>
+          <div className="champ">
+            <label className="ch" htmlFor="nature">Nature de la marchandise</label>
+            <input id="nature" name="nature" placeholder="Ex. mobilier, palettes, matériaux…" />
+          </div>
+          <div className="grille g3">
+            <div className="champ">
+              <label className="ch" htmlFor="poids">Poids (kg)</label>
+              <input id="poids" name="poids" type="number" min="0" step="1" placeholder=" " />
+            </div>
+            <div className="champ">
+              <label className="ch" htmlFor="volume">Volume (m³)</label>
+              <input id="volume" name="volume" type="number" min="0" step="0.1" placeholder=" " />
+            </div>
+            <div className="champ">
+              <label className="ch" htmlFor="palettes">Palettes</label>
+              <input id="palettes" name="palettes" type="number" min="0" step="1" placeholder=" " />
+            </div>
+          </div>
+          <label className="ch">Besoins particuliers</label>
+          {Object.entries(EQUIPEMENTS).map(([k, lab]) => (
+            <label className="coche" key={k}>
+              <input type="checkbox" name="equip" value={k} />
+              <span>{lab}</span>
+            </label>
+          ))}
+        </fieldset>
+
+        <fieldset className="sect-pax">
+          <legend>Personnes</legend>
+          <div className="grille g2">
+            <div className="champ">
+              <label className="ch" htmlFor="passagers">Nombre de passagers</label>
+              <input id="passagers" name="passagers" type="number" min="1" max="60" placeholder=" " />
+            </div>
+            <div className="champ">
+              <label className="ch" htmlFor="nature_pax">Motif du déplacement</label>
+              <input id="nature_pax" name="nature_pax" placeholder="Ex. navette aéroport, transfert d’employés, mariage…" />
+            </div>
+          </div>
+        </fieldset>
 
         <div className="champ">
           <label className="ch" htmlFor="precisions">Précisions</label>
