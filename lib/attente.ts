@@ -1,6 +1,6 @@
 import "server-only";
 import { compter, ligne } from "./db";
-import { DEMANDE_VISIBLE } from "./diffusion";
+import { DEMANDE_VISIBLE, assurerDestinataires } from "./diffusion";
 import type { Utilisateur } from "./auth";
 
 /**
@@ -24,6 +24,7 @@ export async function enAttente(u: Utilisateur | null): Promise<Attente> {
     }
 
     if (u.role === "transporteur") {
+      await assurerDestinataires();
       // Les demandes que ce transporteur peut encore prendre : ouvertes, dans un
       // service qu'il propose, et auxquelles il n'a pas déjà répondu.
       const t = await ligne<{ id: number; pays: string; couverture: string; services: string[] }>(

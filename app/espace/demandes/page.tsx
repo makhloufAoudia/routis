@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, ligne, valeur, journal } from "@/lib/db";
 import { montant, dateFr } from "@/lib/metier";
-import { DEMANDE_VISIBLE } from "@/lib/diffusion";
+import { DEMANDE_VISIBLE, assurerDestinataires } from "@/lib/diffusion";
 import { mailDevisRecu } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -64,6 +64,8 @@ export default async function Page({
   const t = await monTransporteur();
   if (!t) redirect("/espace");
   const sp = await searchParams;
+
+  await assurerDestinataires();
 
   const mesServices = await q<{ service: string }>(
     `SELECT service FROM transporteur_services WHERE transporteur_id=$1`, [t.id]);

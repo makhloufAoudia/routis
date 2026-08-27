@@ -2,10 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
-import { ligne, journal } from "@/lib/db";
+import { q, ligne, journal } from "@/lib/db";
 import { villesDuPays, listePays } from "@/lib/villes";
-import { compterDestinataires } from "@/lib/diffusion";
-import { EQUIPEMENTS, distanceKm, nouvelleReference } from "@/lib/metier";
+import { listerDestinataires, assurerDestinataires } from "@/lib/diffusion";
+import { EQUIPEMENTS, distanceKm, nouvelleReference, noteAffichee } from "@/lib/metier";
 import { mailNouvelleDemande } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +77,21 @@ async function deposer(formData: FormData) {
     ]
   );
 
+  /* Les entreprises cochées par le client. Aucune ligne enregistrée = la
+     demande reste ouverte à tous ceux qui correspondent. */
+  const choisis = formData.getAll("destinataire")
+    .map((v) => parseInt(String(v), 10))
+    .filter((n) => Number.isFinite(n) && n > 0);
+  if (choisis.length) {
+    await assurerDestinataires();
+    await q(
+      `INSERT INTO demande_destinataires (demande_id, transporteur_id)
+       SELECT $1, id FROM transporteurs WHERE id = ANY($2::int[]) AND statut='verifie'
+       ON CONFLICT DO NOTHING`,
+      [cree!.id, choisis]
+    );
+  }
+
   await journal("demande_creee", "demande#" + cree!.id, ref, u.id);
   await mailNouvelleDemande(
     {
@@ -133,7 +148,8 @@ export default async function Page({
 
   // Combien d'entreprises recevront la demande : le client doit le savoir avant
   // d'écrire, pas après. Inutile quand la demande est adressée à une seule.
-  const destinataires = cible ? -1 : await compterDestinataires(type, paysDepart, international);
+  await assurerDestinataires();
+  const destinataires = cible ? [] : await listerDestinataires(type, paysDepart, international);
 
   const messages: Record<string, string> = {
     villes: "Choisissez une ville de départ et une ville d'arrivée dans la liste.",
@@ -151,15 +167,10 @@ export default async function Page({
 
       {/* Le client doit savoir à qui il s'adresse. Si le compte exact n'est pas
           disponible, on le dit sans chiffre plutôt que de ne rien dire. */}
-      {!cible && (
-        <p className={destinataires === 0 ? "msg att" : "msg info"}>
-          {destinataires < 0
-            ? "Votre demande partira à tous les transporteurs vérifiés qui correspondent à ce trajet. Vous comparerez leurs prix, sans engagement."
-            : destinataires === 0
-              ? "Aucun transporteur vérifié ne correspond encore à ce trajet. Votre demande sera enregistrée et leur sera présentée dès qu’une entreprise s’inscrira."
-              : destinataires === 1
-                ? "Votre demande partira à 1 transporteur vérifié, le seul qui corresponde à ce trajet."
-                : `Votre demande partira aux ${destinataires} transporteurs vérifiés qui correspondent à ce trajet. Vous comparerez leurs prix, sans engagement.`}
+      {!cible && destinataires.length === 0 && (
+        <p className="msg att">
+          Aucun transporteur vérifié ne correspond encore à ce trajet. Votre demande sera
+          enregistrée et leur sera présentée dès qu’une entreprise s’inscrira.
         </p>
       )}
 
@@ -296,6 +307,29 @@ export default async function Page({
           <textarea id="precisions" name="precisions"
                     placeholder="Adresses exactes, contraintes horaires, étage, accès…" />
         </div>
+
+        {!cible && destinataires.length > 0 && (
+          <fieldset>
+            <legend>À qui envoyer</legend>
+            <p className="small muted" style={{ marginTop: 0 }}>
+              {destinataires.length === 1
+                ? "Une seule entreprise vérifiée correspond à ce trajet. Décochez-la si vous ne souhaitez pas la solliciter."
+                : `${destinataires.length} entreprises vérifiées correspondent à ce trajet. Toutes sont retenues : décochez celles que vous ne souhaitez pas solliciter.`}
+            </p>
+            {destinataires.map((e) => (
+              <label className="coche" key={e.id}>
+                <input type="checkbox" name="destinataire" value={e.id} defaultChecked />
+                <span>
+                  <b>{e.raison_sociale}</b>
+                  <span className="small muted">
+                    {" · "}{e.ville ?? "—"}{" · "}{noteAffichee(e.note, e.nb_missions)}
+                    {e.nb_missions > 0 ? ` · ${e.nb_missions} mission${e.nb_missions > 1 ? "s" : ""}` : ""}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        )}
 
         <button className="btn pleine" type="submit">Envoyer ma demande</button>
       </form>

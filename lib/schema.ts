@@ -133,6 +133,13 @@ export const SCHEMA: string[] = [
      statut             VARCHAR(15) NOT NULL DEFAULT 'ouverte',
      cree_le            TIMESTAMPTZ NOT NULL DEFAULT now()
    )`,
+  /* Les entreprises retenues par le client au moment de la demande. Aucune
+     ligne = la demande est ouverte à tous ceux qui correspondent. */
+  `CREATE TABLE IF NOT EXISTS demande_destinataires (
+     demande_id      INTEGER NOT NULL REFERENCES demandes(id) ON DELETE CASCADE,
+     transporteur_id INTEGER NOT NULL REFERENCES transporteurs(id) ON DELETE CASCADE,
+     PRIMARY KEY (demande_id, transporteur_id)
+   )`,
   `CREATE INDEX IF NOT EXISTS idx_dem_client ON demandes (client_id)`,
   `CREATE INDEX IF NOT EXISTS idx_dem_statut ON demandes (statut)`,
 

@@ -102,8 +102,11 @@ export async function mailNouvelleDemande(
              AND t.pays = (SELECT pays FROM villes WHERE id=$2)
              AND ( (SELECT pays FROM villes WHERE id=$3) = t.pays
                    OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']) )
+             AND ( NOT EXISTS (SELECT 1 FROM demande_destinataires dd WHERE dd.demande_id=$4)
+                   OR EXISTS (SELECT 1 FROM demande_destinataires dd
+                              WHERE dd.demande_id=$4 AND dd.transporteur_id=t.id) )
            LIMIT ${limite}
-         ) u`, [d.type, villeDepart, villeArrivee]);
+         ) u`, [d.type, villeDepart, villeArrivee, d.id]);
   const liste = cibles?.liste ?? [];
   const html = gabarit("Nouvelle demande à traiter",
     `<p>Une nouvelle demande vient d'être déposée :</p>
