@@ -164,10 +164,10 @@ export default async function Page({
         {/* Les deux boutons sont frères des sections : le passage de l'une à
             l'autre est fait par la feuille de style, sans JavaScript, et vaut
             donc dès la première image de la page. */}
-        <input type="radio" id="t-fret" name="type" value="fret"
+        <input key={"fret-" + type} type="radio" id="t-fret" name="type" value="fret"
                defaultChecked={type === "fret"} style={BOUTON} />
         <label htmlFor="t-fret" style={ETIQUETTE}>Marchandises</label>
-        <input type="radio" id="t-pax" name="type" value="pax"
+        <input key={"pax-" + type} type="radio" id="t-pax" name="type" value="pax"
                defaultChecked={type === "pax"} style={BOUTON} />
         <label htmlFor="t-pax" style={ETIQUETTE}>Personnes</label>
 
@@ -251,7 +251,11 @@ export default async function Page({
             ".forEach(function(f){f.classList.add('pilote');});" +
             "document.addEventListener('change',function(e){var t=e.target;" +
             "if(t&&t.name==='type'&&t.form){t.form.classList.toggle('t-fret',t.value==='fret');" +
-            "t.form.classList.toggle('t-pax',t.value==='pax');}},true);",
+            "t.form.classList.toggle('t-pax',t.value==='pax');}},true);" +
+            "(function(){var v=new URLSearchParams(location.search).get('type');" +
+            "v=(v==='pax')?'pax':'fret';var b=document.getElementById('t-'+v);" +
+            "if(b&&!b.checked){b.checked=true;" +
+            "b.dispatchEvent(new Event('change',{bubbles:true}));}})();",
         }}
       />
     </div>
