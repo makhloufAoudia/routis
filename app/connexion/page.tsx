@@ -65,8 +65,8 @@ export default async function Page({
           différentes pour qu'on ne prenne pas l'une pour l'autre. */}
       <p className="small muted" style={{ marginBottom: 8 }}>Pas encore de compte ?</p>
       <div className="choix-compte">
-        <Link className="btn pleine" href="/inscription">Créer un compte client</Link>
-        <Link className="btn sec pleine" href="/inscription?type=transporteur">
+        <Link className="btn pleine" href="/inscription-client">Créer un compte client</Link>
+        <Link className="btn sec pleine" href="/inscription">
           Inscrire mon entreprise
         </Link>
       </div>

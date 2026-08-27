@@ -61,7 +61,7 @@ export default async function Entete() {
               </>
             ) : (
               <>
-                <Link href="/inscription?type=transporteur">Devenir transporteur</Link>
+                <Link href="/inscription">Devenir transporteur</Link>
                 <Link href="/connexion">Connexion</Link>
               </>
             )}

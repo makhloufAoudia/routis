@@ -94,7 +94,7 @@ export default async function Page() {
               Aucune entreprise n&apos;est encore publiée. Les transporteurs s&apos;inscrivent,
               déposent leurs documents, et apparaissent ici une fois les pièces validées.
             </p>
-            <Link className="btn" href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
+            <Link className="btn" href="/inscription">Inscrire mon entreprise</Link>
           </div>
         )}
       </div>
@@ -114,7 +114,7 @@ export default async function Page() {
             Recevez des demandes de votre région. Inscription gratuite, commission uniquement sur
             les missions conclues.
           </p>
-          <Link className="btn sec pleine" href="/inscription?type=transporteur">Inscrire mon entreprise</Link>
+          <Link className="btn sec pleine" href="/inscription">Inscrire mon entreprise</Link>
         </div>
         {parPays.length > 0 && (
           <div className="carte">
