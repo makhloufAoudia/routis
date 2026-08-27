@@ -21,8 +21,11 @@ async function repondre(formData: FormData) {
     id: number; reference: string; client_id: number; type: string; statut: string;
     distance_km: number; date_souhaitee: string | null; depart: string; arrivee: string;
   }>(
-    `SELECT d.*, vd.nom AS depart, va.nom AS arrivee
+    `SELECT d.*, CASE WHEN vd.pays <> va.pays THEN vd.nom || ' (' || ppd.nom || ')' ELSE vd.nom END AS depart,
+            CASE WHEN vd.pays <> va.pays THEN va.nom || ' (' || ppa.nom || ')' ELSE va.nom END AS arrivee
      FROM demandes d JOIN villes vd ON vd.id=d.ville_depart JOIN villes va ON va.id=d.ville_arrivee
+     JOIN pays ppd ON ppd.code=vd.pays
+     JOIN pays ppa ON ppa.code=va.pays
      WHERE d.id=$1 AND d.statut IN ('ouverte','devis')`, [demandeId]);
   if (!d) redirect("/espace/demandes?erreur=introuvable");
 
@@ -78,7 +81,8 @@ export default async function Page({
   }>(
     `SELECT d.id, d.reference, d.type, d.distance_km, d.date_souhaitee, d.nature, d.poids_kg,
             d.volume_m3, d.palettes, d.passagers, d.precisions, d.statut, d.transporteur_cible,
-            vd.nom AS depart, va.nom AS arrivee,
+            CASE WHEN vd.pays <> va.pays THEN vd.nom || ' (' || ppd.nom || ')' ELSE vd.nom END AS depart,
+            CASE WHEN vd.pays <> va.pays THEN va.nom || ' (' || ppa.nom || ')' ELSE va.nom END AS arrivee,
             (SELECT COUNT(*) FROM devis x WHERE x.demande_id=d.id) AS nb_devis,
             m.prix AS mon_prix, m.devise AS mon_devise, m.statut AS mon_statut,
             m.delai AS mon_delai, m.message AS mon_message, m.valide_jusqu_au AS mon_valide,
@@ -86,13 +90,15 @@ export default async function Page({
      FROM demandes d
      JOIN villes vd ON vd.id=d.ville_depart
      JOIN villes va ON va.id=d.ville_arrivee
+     JOIN pays ppd ON ppd.code=vd.pays
+     JOIN pays ppa ON ppa.code=va.pays
      JOIN utilisateurs u ON u.id=d.client_id
      LEFT JOIN devis m ON m.demande_id=d.id AND m.transporteur_id=$1
      WHERE (d.statut IN ('ouverte','devis') AND ${DEMANDE_VISIBLE})
         OR m.id IS NOT NULL
      ORDER BY (d.statut='acceptee') DESC, (d.transporteur_cible=$1) DESC, d.cree_le DESC
      LIMIT 50`,
-    [t.id, services, t.pays]
+    [t.id, services, t.pays, t.couverture]
   );
 
   const erreurs: Record<string, string> = {

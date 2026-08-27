@@ -26,21 +26,21 @@ export async function enAttente(u: Utilisateur | null): Promise<Attente> {
     if (u.role === "transporteur") {
       // Les demandes que ce transporteur peut encore prendre : ouvertes, dans un
       // service qu'il propose, et auxquelles il n'a pas déjà répondu.
-      const t = await ligne<{ id: number; pays: string; services: string[] }>(
-        `SELECT t.id, t.pays,
+      const t = await ligne<{ id: number; pays: string; couverture: string; services: string[] }>(
+        `SELECT t.id, t.pays, t.couverture,
                 COALESCE(array_agg(ts.service) FILTER (WHERE ts.service IS NOT NULL),
                          ARRAY['fret','pax']) AS services
          FROM transporteurs t
          LEFT JOIN transporteur_services ts ON ts.transporteur_id=t.id
          WHERE t.utilisateur_id=$1 AND t.statut='verifie'
-         GROUP BY t.id, t.pays`, [u.id]);
+         GROUP BY t.id, t.pays, t.couverture`, [u.id]);
       if (!t) return null;
       const n = await compter(
         `SELECT COUNT(*) FROM demandes d
          WHERE d.statut IN ('ouverte','devis')
            AND ${DEMANDE_VISIBLE}
            AND NOT EXISTS (SELECT 1 FROM devis q WHERE q.demande_id=d.id AND q.transporteur_id=$1)`,
-        [t.id, t.services, t.pays]
+        [t.id, t.services, t.pays, t.couverture]
       );
       return n ? { nombre: n, lien: "/espace/demandes", libelle: "demande(s) à traiter" } : null;
     }

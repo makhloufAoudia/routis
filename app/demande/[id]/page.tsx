@@ -19,10 +19,15 @@ type Demande = {
 
 async function charger(id: number) {
   return await ligne<Demande>(
-    `SELECT d.*, vd.nom AS depart, va.nom AS arrivee
+    /* Le pays n'apparaît que lorsque le trajet en franchit un : « Alger →
+       Marseille (France) » se lit mieux que « Alger (Algérie) → Oran (Algérie) ». */
+    `SELECT d.*, CASE WHEN vd.pays <> va.pays THEN vd.nom || ' (' || ppd.nom || ')' ELSE vd.nom END AS depart,
+            CASE WHEN vd.pays <> va.pays THEN va.nom || ' (' || ppa.nom || ')' ELSE va.nom END AS arrivee
      FROM demandes d
      JOIN villes vd ON vd.id=d.ville_depart
      JOIN villes va ON va.id=d.ville_arrivee
+     JOIN pays ppd ON ppd.code=vd.pays
+     JOIN pays ppa ON ppa.code=va.pays
      WHERE d.id=$1`, [id]);
 }
 

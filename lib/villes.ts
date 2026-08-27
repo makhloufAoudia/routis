@@ -2,10 +2,13 @@ import "server-only";
 import { q } from "@/lib/db";
 
 export type VilleChoix = { id: number; nom: string };
+export type PaysChoix = { code: string; nom: string };
 
 declare global {
   // eslint-disable-next-line no-var
   var __routisVilles: Map<string, VilleChoix[]> | undefined;
+  // eslint-disable-next-line no-var
+  var __routisPays: PaysChoix[] | undefined;
 }
 
 /**
@@ -27,4 +30,12 @@ export async function villesDuPays(pays: string): Promise<VilleChoix[]> {
   );
   cache.set(pays, rows);
   return rows;
+}
+
+/** La liste des pays, gardée elle aussi en mémoire : elle ne change jamais. */
+export async function listePays(): Promise<PaysChoix[]> {
+  if (!global.__routisPays) {
+    global.__routisPays = await q<PaysChoix>(`SELECT code, nom FROM pays ORDER BY nom`);
+  }
+  return global.__routisPays;
 }

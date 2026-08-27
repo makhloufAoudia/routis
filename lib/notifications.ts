@@ -81,7 +81,8 @@ export async function mailDocumentRefuse(transporteurId: number, typeLisible: st
 }
 
 export async function mailNouvelleDemande(
-  d: Demande, villeDepart: number, cible: number | null = null, limite = 25
+  d: Demande, villeDepart: number, villeArrivee: number,
+  cible: number | null = null, limite = 25
 ) {
   /* Demande adressée : une seule entreprise est prévenue, celle que le client a
      choisie. Sinon, tous les transporteurs vérifiés du pays de départ qui
@@ -99,8 +100,10 @@ export async function mailNouvelleDemande(
            JOIN transporteur_services ts ON ts.transporteur_id=t.id
            WHERE t.statut='verifie' AND ts.service=$1
              AND t.pays = (SELECT pays FROM villes WHERE id=$2)
+             AND ( (SELECT pays FROM villes WHERE id=$3) = t.pays
+                   OR t.couverture = ANY(ARRAY['maghreb','europe','mondiale']) )
            LIMIT ${limite}
-         ) u`, [d.type, villeDepart]);
+         ) u`, [d.type, villeDepart, villeArrivee]);
   const liste = cibles?.liste ?? [];
   const html = gabarit("Nouvelle demande à traiter",
     `<p>Une nouvelle demande vient d'être déposée :</p>

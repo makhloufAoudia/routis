@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { utilisateur } from "@/lib/auth";
 import { ligne, journal } from "@/lib/db";
-import { villesDuPays } from "@/lib/villes";
+import { villesDuPays, listePays } from "@/lib/villes";
 import { EQUIPEMENTS, distanceKm, nouvelleReference } from "@/lib/metier";
 import { mailNouvelleDemande } from "@/lib/notifications";
 
@@ -17,9 +17,17 @@ async function deposer(formData: FormData) {
   const u = await utilisateur();
   const type = String(formData.get("type") ?? "fret") === "pax" ? "pax" : "fret";
   const cible = parseInt(String(formData.get("transporteur") ?? ""), 10) || null;
+  const code = (c: unknown) => {
+    const v = String(c ?? "").toUpperCase();
+    return /^[A-Z]{2}$/.test(v) ? v : "";
+  };
+  // Conservé pour revenir sur le même trajet si la saisie est à reprendre.
+  const trajet = `type=${type}` +
+    (code(formData.get("pd")) ? `&pd=${code(formData.get("pd"))}` : "") +
+    (code(formData.get("pa")) ? `&pa=${code(formData.get("pa"))}` : "");
 
   if (!u) {
-    redirect("/connexion?suite=" + encodeURIComponent(`/devis?type=${type}`));
+    redirect("/connexion?suite=" + encodeURIComponent(`/devis?${trajet}`));
   }
 
   const depart = parseInt(String(formData.get("depart") ?? ""), 10) || 0;
@@ -27,11 +35,11 @@ async function deposer(formData: FormData) {
   const vd = depart ? await ligne<Ville>(`SELECT * FROM villes WHERE id=$1`, [depart]) : null;
   const va = arrivee ? await ligne<Ville>(`SELECT * FROM villes WHERE id=$1`, [arrivee]) : null;
 
-  if (!vd || !va) redirect(`/devis?type=${type}&erreur=villes`);
-  if (vd.id === va.id) redirect(`/devis?type=${type}&erreur=identiques`);
+  if (!vd || !va) redirect(`/devis?${trajet}&erreur=villes`);
+  if (vd.id === va.id) redirect(`/devis?${trajet}&erreur=identiques`);
 
   const date = String(formData.get("date_souhaitee") ?? "");
-  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) redirect(`/devis?type=${type}&erreur=date`);
+  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) redirect(`/devis?${trajet}&erreur=date`);
 
   const equips = formData
     .getAll("equip")
@@ -77,6 +85,7 @@ async function deposer(formData: FormData) {
       date_souhaitee: date || null,
     },
     vd.id,
+    va.id,
     cible
   );
 
@@ -86,7 +95,9 @@ async function deposer(formData: FormData) {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; transporteur?: string; erreur?: string }>;
+  searchParams: Promise<{
+    type?: string; transporteur?: string; erreur?: string; pd?: string; pa?: string;
+  }>;
 }) {
   const sp = await searchParams;
   const type = sp.type === "pax" ? "pax" : "fret";
@@ -100,11 +111,24 @@ export default async function Page({
       )
     : null;
 
-  const pays = cible?.pays ?? "DZ";
-  const villes = await villesDuPays(pays);
-  // Une seule liste d'options pour les deux champs : la même référence n'est
-  // envoyée au navigateur qu'une fois, au lieu d'être dupliquée.
-  const options = villes.map((v) => ({ v: String(v.id), l: v.nom }));
+  const pays = await listePays();
+  const connu = (c: string | undefined) =>
+    c && pays.some((p) => p.code === c) ? c : null;
+
+  // Le trajet peut franchir une frontière : chaque extrémité a son pays, celui
+  // de départ servant de valeur par défaut à l'arrivée.
+  const paysDepart = connu(sp.pd) ?? cible?.pays ?? "DZ";
+  const paysArrivee = connu(sp.pa) ?? paysDepart;
+  const international = paysArrivee !== paysDepart;
+
+  const [villesDepart, villesArrivee] = await Promise.all([
+    villesDuPays(paysDepart),
+    paysArrivee === paysDepart ? villesDuPays(paysDepart) : villesDuPays(paysArrivee),
+  ]);
+  const optionsDepart = villesDepart.map((v) => ({ v: String(v.id), l: v.nom }));
+  const optionsArrivee = paysArrivee === paysDepart
+    ? optionsDepart
+    : villesArrivee.map((v) => ({ v: String(v.id), l: v.nom }));
 
   const messages: Record<string, string> = {
     villes: "Choisissez une ville de départ et une ville d'arrivée dans la liste.",
@@ -138,6 +162,35 @@ export default async function Page({
       {/* La classe du formulaire décide de la section affichée. La règle voyage
           avec la page, et non dans le fichier de style commun : une feuille
           restée en mémoire du navigateur ne peut donc pas la faire disparaître. */}
+      {/* Le choix des pays recharge la page : les villes proposées en dépendent,
+          et il y en a des centaines par pays. Son propre formulaire, donc — un
+          formulaire ne peut pas en contenir un autre. */}
+      <form method="get" action="/devis" id="trajet" className="carte">
+        <input type="hidden" name="type" value={type} />
+        {cibleId ? <input type="hidden" name="transporteur" value={cibleId} /> : null}
+        <div className="grille g2">
+          <div className="champ">
+            <label className="ch" htmlFor="pd">Pays de départ</label>
+            <select id="pd" name="pd" defaultValue={paysDepart}>
+              {pays.map((p) => <option key={p.code} value={p.code}>{p.nom}</option>)}
+            </select>
+          </div>
+          <div className="champ">
+            <label className="ch" htmlFor="pa">Pays d&apos;arrivée</label>
+            <select id="pa" name="pa" defaultValue={paysArrivee}>
+              {pays.map((p) => <option key={p.code} value={p.code}>{p.nom}</option>)}
+            </select>
+          </div>
+        </div>
+        <button className="btn sec" type="submit">Mettre à jour les villes</button>
+        {international && (
+          <p className="small muted" style={{ marginBottom: 0 }}>
+            Trajet international : votre demande partira aux transporteurs du pays de départ
+            dont la zone couverte dépasse leurs frontières.
+          </p>
+        )}
+      </form>
+
       <style
         dangerouslySetInnerHTML={{
           __html:
@@ -148,6 +201,8 @@ export default async function Page({
         <input type="hidden" name="transporteur" value={cibleId || ""} />
 
         <input type="hidden" name="type" value={type} />
+        <input type="hidden" name="pd" value={paysDepart} />
+        <input type="hidden" name="pa" value={paysArrivee} />
 
         {/* Les deux phrases sont là toutes les deux ; la classe du formulaire
             n’en laisse voir qu’une, comme pour les sections. */}
@@ -161,11 +216,11 @@ export default async function Page({
         <div className="grille g2">
           <div className="champ">
             <label className="ch" htmlFor="depart">Ville de départ</label>
-            <ListeFiltrable id="depart" nom="depart" requis options={options} />
+            <ListeFiltrable id="depart" nom="depart" requis options={optionsDepart} />
           </div>
           <div className="champ">
             <label className="ch" htmlFor="arrivee">Ville d&apos;arrivée</label>
-            <ListeFiltrable id="arrivee" nom="arrivee" requis options={options} />
+            <ListeFiltrable id="arrivee" nom="arrivee" requis options={optionsArrivee} />
           </div>
         </div>
 
@@ -234,6 +289,10 @@ export default async function Page({
           __html:
             "(function(){var v=new URLSearchParams(location.search).get('type');" +
             "v=(v==='pax')?'pax':'fret';" +
+            "var tr=document.getElementById('trajet');" +
+            "if(tr){tr.querySelectorAll('select').forEach(function(sel){" +
+            "sel.addEventListener('change',function(){tr.submit();});});" +
+            "var b=tr.querySelector('button[type=submit]');if(b)b.style.display='none';}" +
             "document.querySelectorAll('form.t-fret,form.t-pax').forEach(function(f){" +
             "f.classList.toggle('t-fret',v==='fret');f.classList.toggle('t-pax',v==='pax');" +
             "var h=f.querySelector('input[name=type]');if(h)h.value=v;});})();",

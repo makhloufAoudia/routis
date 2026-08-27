@@ -18,11 +18,14 @@ export default async function Page() {
     depart: string; arrivee: string;
   }>(
     `SELECT d.id, d.reference, d.type, d.distance_km, d.date_souhaitee, d.statut,
-            vd.nom AS depart, va.nom AS arrivee,
+            CASE WHEN vd.pays <> va.pays THEN vd.nom || ' (' || ppd.nom || ')' ELSE vd.nom END AS depart,
+            CASE WHEN vd.pays <> va.pays THEN va.nom || ' (' || ppa.nom || ')' ELSE va.nom END AS arrivee,
             (SELECT COUNT(*) FROM devis q WHERE q.demande_id=d.id) AS nb_devis
      FROM demandes d
      JOIN villes vd ON vd.id=d.ville_depart
      JOIN villes va ON va.id=d.ville_arrivee
+     JOIN pays ppd ON ppd.code=vd.pays
+     JOIN pays ppa ON ppa.code=va.pays
      WHERE d.client_id=$1 ORDER BY d.cree_le DESC`, [u.id]
   );
 
