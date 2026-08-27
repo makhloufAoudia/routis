@@ -56,12 +56,12 @@ async function deposer(formData: FormData) {
       ref, u.id, type, vd.id, va.id,
       distanceKm(parseFloat(vd.lat), parseFloat(vd.lon), parseFloat(va.lat), parseFloat(va.lon)),
       date || null,
-      String(formData.get("nature") ?? "").slice(0, 120),
+      String(formData.get(type === "pax" ? "nature_pax" : "nature") ?? "").slice(0, 120),
       type === "fret" ? nombre("poids") : null,
       type === "fret" ? decimal("volume") : null,
       type === "fret" ? nombre("palettes") : null,
       type === "pax" ? nombre("passagers") : null,
-      equips.join(","),
+      type === "fret" ? equips.join(",") : "",
       String(formData.get("precisions") ?? ""),
       cible,
     ]
@@ -162,19 +162,17 @@ export default async function Page({
           </div>
         </div>
 
-        <div className="grille g2">
-          <div className="champ">
-            <label className="ch" htmlFor="date_souhaitee">Date souhaitée</label>
-            <input id="date_souhaitee" name="date_souhaitee" type="date" />
-          </div>
-          <div className="champ">
-            <label className="ch" htmlFor="nature">Nature du transport</label>
-            <input id="nature" name="nature" placeholder="Ex. mobilier, palettes, matériaux…" />
-          </div>
+        <div className="champ" style={{ maxWidth: 260 }}>
+          <label className="ch" htmlFor="date_souhaitee">Date souhaitée</label>
+          <input id="date_souhaitee" name="date_souhaitee" type="date" />
         </div>
 
-        <fieldset>
+        <fieldset className="sect-fret">
           <legend>Marchandises</legend>
+          <div className="champ">
+            <label className="ch" htmlFor="nature">Nature de la marchandise</label>
+            <input id="nature" name="nature" placeholder="Ex. mobilier, palettes, matériaux…" />
+          </div>
           <div className="grille g3">
             <div className="champ">
               <label className="ch" htmlFor="poids">Poids (kg)</label>
@@ -198,11 +196,17 @@ export default async function Page({
           ))}
         </fieldset>
 
-        <fieldset>
+        <fieldset className="sect-pax">
           <legend>Personnes</legend>
-          <div className="champ" style={{ maxWidth: 220 }}>
-            <label className="ch" htmlFor="passagers">Nombre de passagers</label>
-            <input id="passagers" name="passagers" type="number" min="1" max="60" placeholder=" " />
+          <div className="grille g2">
+            <div className="champ">
+              <label className="ch" htmlFor="passagers">Nombre de passagers</label>
+              <input id="passagers" name="passagers" type="number" min="1" max="60" placeholder=" " />
+            </div>
+            <div className="champ">
+              <label className="ch" htmlFor="nature_pax">Motif du déplacement</label>
+              <input id="nature_pax" name="nature_pax" placeholder="Ex. navette aéroport, transfert d’employés, mariage…" />
+            </div>
           </div>
         </fieldset>
 
