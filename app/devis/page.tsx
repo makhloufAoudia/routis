@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ListeFiltrable from "@/components/ListeFiltrable";
@@ -83,6 +84,17 @@ async function deposer(formData: FormData) {
   redirect(`/demande/${cree!.id}`);
 }
 
+/* Écrits ici plutôt que dans la feuille de style : un style posé sur
+   l'élément l'emporte sur tout le reste, y compris sur une ancienne feuille
+   restée en mémoire du navigateur. */
+const BOUTON: CSSProperties = {
+  width: 17, height: 17, display: "inline-block", verticalAlign: "middle",
+  margin: "0 8px 0 0", accentColor: "var(--act)", flex: "none",
+};
+const ETIQUETTE: CSSProperties = {
+  display: "inline-block", marginRight: 22, fontSize: 14.5, cursor: "pointer",
+};
+
 export default async function Page({
   searchParams,
 }: {
@@ -135,6 +147,16 @@ export default async function Page({
         </div>
       )}
 
+      {/* Ces quelques règles voyagent avec la page, et non dans le fichier de
+          style commun : si le navigateur garde une ancienne version de ce
+          fichier, la bascule fonctionne quand même. */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html:
+            "form.pilote.t-fret .sect-pax,form.pilote.t-pax .sect-fret{display:none!important}" +
+            "#t-fret:checked ~ .sect-pax,#t-pax:checked ~ .sect-fret{display:none!important}",
+        }}
+      />
       <form action={deposer} className={"carte " + (type === "pax" ? "t-pax" : "t-fret")} autoComplete="off">
         <input type="hidden" name="transporteur" value={cibleId || ""} />
 
@@ -142,12 +164,12 @@ export default async function Page({
         {/* Les deux boutons sont frères des sections : le passage de l'une à
             l'autre est fait par la feuille de style, sans JavaScript, et vaut
             donc dès la première image de la page. */}
-        <input className="bascule" type="radio" id="t-fret" name="type" value="fret"
-               defaultChecked={type === "fret"} />
-        <label className="bascule-lab" htmlFor="t-fret">Marchandises</label>
-        <input className="bascule" type="radio" id="t-pax" name="type" value="pax"
-               defaultChecked={type === "pax"} />
-        <label className="bascule-lab" htmlFor="t-pax">Personnes</label>
+        <input type="radio" id="t-fret" name="type" value="fret"
+               defaultChecked={type === "fret"} style={BOUTON} />
+        <label htmlFor="t-fret" style={ETIQUETTE}>Marchandises</label>
+        <input type="radio" id="t-pax" name="type" value="pax"
+               defaultChecked={type === "pax"} style={BOUTON} />
+        <label htmlFor="t-pax" style={ETIQUETTE}>Personnes</label>
 
         <div className="grille g2">
           <div className="champ">

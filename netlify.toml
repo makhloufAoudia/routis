@@ -25,3 +25,11 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# La page de devis ne doit jamais être resservie depuis une réserve : son
+# contenu dépend du type demandé dans l'adresse, et une version gardée en
+# mémoire montrerait l'autre.
+[[headers]]
+  for = "/devis"
+  [headers.values]
+    Cache-Control = "no-store"
