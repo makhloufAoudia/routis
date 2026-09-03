@@ -22,6 +22,15 @@ export default async function Entete() {
       </span>
     ) : null;
 
+  /* Le logo porte le rôle : sans lui, rien à l'écran ne dit sous quel compte
+     on navigue, et les espaces client et transporteur se ressemblent trop. */
+  const roles: Record<string, string> = {
+    client: "client",
+    transporteur: "pro",
+    admin: "admin",
+  };
+  const role = u ? roles[u.role] : null;
+
   return (
     <>
       {!installe && (
@@ -37,6 +46,7 @@ export default async function Entete() {
           <Link className="logo" href="/">
             <span className="m">R</span>
             <span className="n">rou<i>tis</i></span>
+            {role && <span className="logo-r">{role}</span>}
           </Link>
           <form className="gsearch" action="/annuaire" role="search">
             <input type="search" name="q" placeholder="Rechercher un transporteur, une ville…"
