@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { exigerRole } from "@/lib/auth";
-import { q, compter } from "@/lib/db";
-import { dateFr } from "@/lib/metier";
+import { compter } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Administration" };
@@ -22,15 +21,6 @@ export default async function Page() {
     compter(`SELECT COUNT(*) FROM utilisateurs WHERE role='client'`),
   ]);
 
-  const recent = await q<{
-    id: number; action: string; cible: string; details: string;
-    cree_le: string; nom: string | null;
-  }>(
-    `SELECT j.id, j.action, j.cible, j.details, j.cree_le, u.nom
-     FROM journal j LEFT JOIN utilisateurs u ON u.id=j.utilisateur_id
-     ORDER BY j.id DESC LIMIT 15`
-  );
-
   const stats: [string, number][] = [
     ["Transporteurs", transporteurs],
     ["Vérifiés", verifies],
@@ -48,7 +38,8 @@ export default async function Page() {
         <Link href="/admin/transporteurs">Transporteurs</Link> ·{" "}
         <Link href="/admin/documents">Documents</Link> ·{" "}
         <Link href="/admin/demandes">Demandes</Link> ·{" "}
-        <Link href="/admin/emails">E-mails</Link>
+        <Link href="/admin/emails">E-mails</Link> ·{" "}
+        <Link href="/admin/parametres">Paramètres</Link>
       </nav>
 
       {(attente > 0 || docsAttente > 0) && (
@@ -67,29 +58,6 @@ export default async function Page() {
           </div>
         ))}
       </div>
-
-      <h2>Journal d&apos;activité</h2>
-      <div className="tw">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th><th>Utilisateur</th><th>Action</th><th>Cible</th><th>Détails</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recent.map((r) => (
-              <tr key={r.id}>
-                <td className="small">{dateFr(r.cree_le, true)}</td>
-                <td className="small">{r.nom ?? "—"}</td>
-                <td className="small">{r.action}</td>
-                <td className="small mono">{r.cible}</td>
-                <td className="small">{r.details}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {recent.length === 0 && <div className="carte vide">Aucune activité enregistrée.</div>}
     </>
   );
 }
