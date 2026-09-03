@@ -226,6 +226,12 @@ legend{font-weight:700;font-size:15px;padding:0 6px}
 .btn.sm{padding:7px 14px;font-size:14px}
 .btn.pleine{display:block;width:100%}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
+/* Un bouton qui travaille le dit : la rondelle tourne a la place du libelle,
+   et le bouton refuse un second clic tant que la reponse n'est pas la. */
+.en-cours{display:inline-flex;align-items:center;justify-content:center;gap:9px;white-space:nowrap}
+.rondelle.mini{width:14px;height:14px;border-width:2px;
+  border-color:currentColor;border-top-color:transparent;opacity:.85}
+.btn[disabled]{opacity:.7}
 
 /* ---------- liste filtrable ---------- */
 /* Le champ et sa liste sont enfants directs de .champ, déjà en position

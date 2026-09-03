@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { estInstalle, q, compter, ligne } from "@/lib/db";
 import { SCHEMA } from "@/lib/schema";
 import bcrypt from "bcryptjs";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Installation" };
@@ -185,7 +186,7 @@ export default async function Page({
               <div className="aide">8 caractères minimum.</div>
             </div>
           </div>
-          <button className="btn pleine" type="submit">Installer le site</button>
+          <Soumettre className="btn pleine">Installer le site</Soumettre>
           <p className="aide" style={{ marginTop: 10 }}>
             L&apos;import des 6 495 villes prend quelques secondes.
           </p>

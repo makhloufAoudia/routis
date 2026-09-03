@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { utilisateur, creerCompte, ouvrirSession } from "@/lib/auth";
 import { q } from "@/lib/db";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Inscrire mon entreprise" };
@@ -125,7 +126,7 @@ export default async function Page({
           <div className="aide">8 caractères minimum.</div>
         </div>
 
-        <button className="btn pleine" type="submit">Inscrire mon entreprise</button>
+        <Soumettre className="btn pleine">Inscrire mon entreprise</Soumettre>
       </form>
 
       <p className="small muted">

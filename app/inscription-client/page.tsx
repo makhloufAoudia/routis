@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { utilisateur, creerCompte, ouvrirSession } from "@/lib/auth";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Créer un compte client" };
@@ -64,7 +65,7 @@ export default async function Page({
                  autoComplete="new-password" placeholder=" " />
           <div className="aide">8 caractères minimum.</div>
         </div>
-        <button className="btn pleine" type="submit">Créer mon compte</button>
+        <Soumettre className="btn pleine">Créer mon compte</Soumettre>
       </form>
 
       <p className="small muted">

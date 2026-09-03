@@ -4,6 +4,7 @@ import { exigerRole } from "@/lib/auth";
 import { q, ligne, compter, journal } from "@/lib/db";
 import { initiales } from "@/lib/metier";
 import { mailTransporteurVerifie, mailTransporteurRefuse } from "@/lib/notifications";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Transporteurs" };
@@ -139,7 +140,7 @@ export default async function Page({
                 <input type="hidden" name="action" value="verifier" />
                 <input type="hidden" name="id" value={t.id} />
                 <input type="hidden" name="retour" value={filtre} />
-                <button className="btn sm" type="submit">Vérifier et publier</button>
+                <Soumettre className="btn sm">Vérifier et publier</Soumettre>
               </form>
             ) : (
               <form action={traiter} style={{ display: "flex", gap: 8, alignItems: "center", flex: "1 1 260px", minWidth: 0 }}>
@@ -147,7 +148,7 @@ export default async function Page({
                 <input type="hidden" name="id" value={t.id} />
                 <input type="hidden" name="retour" value={filtre} />
                 <input name="motif" placeholder="Motif de suspension" style={{ flex: 1, minWidth: 150 }} required />
-                <button className="btn sec sm" type="submit">Suspendre</button>
+                <Soumettre className="btn sec sm">Suspendre</Soumettre>
               </form>
             )}
 
@@ -157,7 +158,7 @@ export default async function Page({
                 <input type="hidden" name="id" value={t.id} />
                 <input type="hidden" name="retour" value={filtre} />
                 <input name="motif" placeholder="Motif du refus" style={{ flex: 1, minWidth: 150 }} required />
-                <button className="btn sec sm" type="submit">Refuser</button>
+                <Soumettre className="btn sec sm">Refuser</Soumettre>
               </form>
             )}
           </div>

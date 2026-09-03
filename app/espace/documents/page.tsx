@@ -4,6 +4,7 @@ import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { DOCUMENTS_REQUIS, dateFr } from "@/lib/metier";
 import { enregistrerFichier, supprimerFichier, extensionReelle, TAILLE_MAX } from "@/lib/stockage";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mes documents" };
@@ -142,7 +143,7 @@ export default async function Page({
                     </a>
                     <form action={supprimer} style={{ display: "inline" }}>
                       <input type="hidden" name="doc_id" value={d.id} />
-                      <button className="btn sec sm" type="submit">Supprimer</button>
+                      <Soumettre className="btn sec sm">Supprimer</Soumettre>
                     </form>
                   </>
                 )}
@@ -169,7 +170,7 @@ export default async function Page({
                   <label className="ch">Date d&apos;expiration</label>
                   <input type="date" name="expire_le" defaultValue={d?.expire_le ?? ""} />
                 </div>
-                <button className="btn sm" type="submit">Déposer</button>
+                <Soumettre className="btn sm">Déposer</Soumettre>
               </form>
             </div>
           );
@@ -182,7 +183,7 @@ export default async function Page({
               Une fois vos pièces déposées, envoyez le dossier. Un administrateur le contrôle,
               puis votre entreprise apparaît dans l&apos;annuaire public.
             </p>
-            <button className="btn" type="submit">Envoyer mon dossier</button>
+            <Soumettre className="btn">Envoyer mon dossier</Soumettre>
           </form>
         )}
       </div>

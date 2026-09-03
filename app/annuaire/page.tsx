@@ -2,6 +2,7 @@ import Link from "next/link";
 import ListeFiltrable from "@/components/ListeFiltrable";
 import { q, compter, valeur, estInstalle } from "@/lib/db";
 import { SERVICES, EQUIPEMENTS, COUVERTURES, initiales, noteAffichee, extrait } from "@/lib/metier";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 
@@ -216,7 +217,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Par
 
             {recherche && <input type="hidden" name="q" value={recherche} />}
             <p style={{ marginTop: 14 }}>
-              <button className="btn pleine" type="submit">Appliquer les filtres</button>
+              <Soumettre className="btn pleine">Appliquer les filtres</Soumettre>
             </p>
             <p style={{ margin: 0 }}>
               <Link className="btn sec pleine" href={`/annuaire?pays=${pays}`}>Réinitialiser</Link>

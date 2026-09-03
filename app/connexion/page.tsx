@@ -4,6 +4,7 @@ import {
   utilisateur, verifierIdentifiants, ouvrirSession,
   tropDeTentatives, noterEchec, effacerEchecs,
 } from "@/lib/auth";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Connexion" };
@@ -56,7 +57,7 @@ export default async function Page({
           <input id="mot_de_passe" name="mot_de_passe" type="password" required
                  autoComplete="current-password" placeholder=" " />
         </div>
-        <button className="btn pleine" type="submit">Se connecter</button>
+        <Soumettre className="btn pleine">Se connecter</Soumettre>
         <p className="small" style={{ margin: "12px 0 0", textAlign: "center" }}>
           <Link href="/mot-de-passe-oublie">Mot de passe oublié ?</Link>
         </p>

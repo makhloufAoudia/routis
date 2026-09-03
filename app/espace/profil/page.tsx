@@ -5,6 +5,7 @@ import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, journal, compter } from "@/lib/db";
 import { villesDuPays } from "@/lib/villes";
 import { SERVICES, EQUIPEMENTS, COUVERTURES, EFFECTIFS } from "@/lib/metier";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Ma fiche entreprise" };
@@ -205,7 +206,7 @@ export default async function Page({
           <div className="aide">Ce texte apparaît sur votre fiche dans l&apos;annuaire.</div>
         </div>
 
-        <button className="btn" type="submit">Enregistrer</button>
+        <Soumettre className="btn">Enregistrer</Soumettre>
       </form>
     </>
   );

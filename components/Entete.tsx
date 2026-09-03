@@ -4,6 +4,7 @@ import { estInstalle } from "@/lib/db";
 import { enAttente } from "@/lib/attente";
 import BasculeTheme from "./BasculeTheme";
 import MenuCompact from "./MenuCompact";
+import Soumettre from "./Soumettre";
 import Onglets from "./Onglets";
 import { Suspense } from "react";
 
@@ -51,7 +52,7 @@ export default async function Entete() {
           <form className="gsearch" action="/annuaire" role="search">
             <input type="search" name="q" placeholder="Rechercher un transporteur, une ville…"
                    aria-label="Rechercher un transporteur" />
-            <button type="submit" aria-label="Rechercher">⌕</button>
+            <Soumettre compact aria-label="Rechercher">⌕</Soumettre>
           </form>
           <BasculeTheme />
           <MenuCompact>

@@ -5,6 +5,7 @@ import { exigerConnexion, utilisateur } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { STATUTS_DEMANDE, EQUIPEMENTS, montant, dateFr, noteAffichee, initiales } from "@/lib/metier";
 import { mailDevisAccepte } from "@/lib/notifications";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 
@@ -194,7 +195,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   <textarea id="commentaire" name="commentaire"
                             placeholder="Ponctualité, état du véhicule, communication…" />
                 </div>
-                <button className="btn" type="submit">Publier mon avis</button>
+                <Soumettre className="btn">Publier mon avis</Soumettre>
               </form>
             </div>
           ) : null}
@@ -258,7 +259,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   <form action={accepter}>
                     <input type="hidden" name="demande_id" value={id} />
                     <input type="hidden" name="devis_id" value={qd.id} />
-                    <button className="btn sm" type="submit">Accepter ce devis</button>
+                    <Soumettre className="btn sm">Accepter ce devis</Soumettre>
                   </form>
                 )}
               </div>
@@ -302,7 +303,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <h3 style={{ marginTop: 0 }}>Vous n&apos;avez plus besoin de ce transport ?</h3>
               <form action={annuler}>
                 <input type="hidden" name="demande_id" value={id} />
-                <button className="btn sec pleine" type="submit">Annuler ma demande</button>
+                <Soumettre className="btn sec pleine">Annuler ma demande</Soumettre>
               </form>
             </div>
           )}
@@ -313,7 +314,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <p className="small muted">Clôturez la mission pour pouvoir noter le transporteur.</p>
               <form action={terminer}>
                 <input type="hidden" name="demande_id" value={id} />
-                <button className="btn pleine" type="submit">Marquer la mission terminée</button>
+                <Soumettre className="btn pleine">Marquer la mission terminée</Soumettre>
               </form>
             </div>
           )}

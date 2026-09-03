@@ -5,6 +5,7 @@ import { q, ligne, valeur, journal } from "@/lib/db";
 import { montant, dateFr } from "@/lib/metier";
 import { DEMANDE_VISIBLE, assurerDestinataires } from "@/lib/diffusion";
 import { mailDevisRecu } from "@/lib/notifications";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Demandes à traiter" };
@@ -191,9 +192,9 @@ export default async function Page({
                 <input name="message" defaultValue={d.mon_message ?? ""}
                        placeholder="Conditions, véhicule proposé…" />
               </div>
-              <button className="btn sm" type="submit">
+              <Soumettre className="btn sm">
                 {d.mon_prix ? "Mettre à jour" : "Envoyer mon devis"}
-              </button>
+              </Soumettre>
             </form>
           ) : null}
         </article>

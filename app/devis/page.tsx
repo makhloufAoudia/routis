@@ -7,6 +7,7 @@ import { villesDuPays, listePays } from "@/lib/villes";
 import { listerDestinataires, assurerDestinataires } from "@/lib/diffusion";
 import { EQUIPEMENTS, distanceKm, nouvelleReference, noteAffichee } from "@/lib/metier";
 import { mailNouvelleDemande } from "@/lib/notifications";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Demander un devis" };
@@ -212,7 +213,7 @@ export default async function Page({
             </select>
           </div>
         </div>
-        <button className="btn sec" type="submit">Mettre à jour les villes</button>
+        <Soumettre className="btn sec">Mettre à jour les villes</Soumettre>
         {international && (
           <p className="small muted" style={{ marginBottom: 0 }}>
             Trajet international : votre demande partira aux transporteurs du pays de départ
@@ -331,7 +332,7 @@ export default async function Page({
           </fieldset>
         )}
 
-        <button className="btn pleine" type="submit">Envoyer ma demande</button>
+        <Soumettre className="btn pleine">Envoyer ma demande</Soumettre>
       </form>
 
       {/* Filet de sécurité : si la page servie ne correspondait pas au type

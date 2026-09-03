@@ -3,6 +3,7 @@ import Link from "next/link";
 import { utilisateur } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { envoyerMail, gabarit, urlSite } from "@/lib/mail";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mot de passe oublié" };
@@ -61,7 +62,7 @@ export default async function Page({
               <label className="ch" htmlFor="email">Adresse e-mail</label>
               <input id="email" name="email" type="email" required autoFocus autoComplete="email" placeholder=" " />
             </div>
-            <button className="btn pleine" type="submit">Envoyer le lien</button>
+            <Soumettre className="btn pleine">Envoyer le lien</Soumettre>
           </form>
           <p className="small muted"><Link href="/connexion">Je me souviens de mon mot de passe</Link></p>
         </>

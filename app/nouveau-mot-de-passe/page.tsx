@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { utilisateur, changerMotDePasse } from "@/lib/auth";
 import { q, ligne } from "@/lib/db";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Nouveau mot de passe" };
@@ -82,7 +83,7 @@ export default async function Page({
           <label className="ch" htmlFor="confirmation">Confirmation</label>
           <input id="confirmation" name="confirmation" type="password" minLength={8} required placeholder=" " />
         </div>
-        <button className="btn pleine" type="submit">Enregistrer</button>
+        <Soumettre className="btn pleine">Enregistrer</Soumettre>
       </form>
     </div>
   );

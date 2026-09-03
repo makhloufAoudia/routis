@@ -4,6 +4,7 @@ import { exigerRole } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { DOCUMENTS_REQUIS, dateFr } from "@/lib/metier";
 import { mailDocumentRefuse } from "@/lib/notifications";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Documents à contrôler" };
@@ -113,14 +114,14 @@ export default async function Page({
               <input type="hidden" name="action" value="valider" />
               <input type="hidden" name="id" value={d.id} />
               <input type="hidden" name="retour" value={tid || ""} />
-              <button className="btn sm" type="submit">Valider</button>
+              <Soumettre className="btn sm">Valider</Soumettre>
             </form>
             <form action={controler} style={{ display: "flex", gap: 8, alignItems: "center", flex: "1 1 260px", minWidth: 0 }}>
               <input type="hidden" name="action" value="refuser" />
               <input type="hidden" name="id" value={d.id} />
               <input type="hidden" name="retour" value={tid || ""} />
               <input name="motif" placeholder="Motif du refus" style={{ flex: 1, minWidth: 150 }} required />
-              <button className="btn sec sm" type="submit">Refuser</button>
+              <Soumettre className="btn sec sm">Refuser</Soumettre>
             </form>
           </div>
         </article>

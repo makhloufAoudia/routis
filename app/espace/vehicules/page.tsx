@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { exigerRole, monTransporteur } from "@/lib/auth";
 import { q, ligne, journal } from "@/lib/db";
 import { CATEGORIES } from "@/lib/metier";
+import Soumettre from "@/components/Soumettre";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mes véhicules" };
@@ -105,7 +106,7 @@ export default async function Page({
                       <td>
                         <form action={supprimer}>
                           <input type="hidden" name="id" value={v.id} />
-                          <button className="btn sec sm" type="submit">Supprimer</button>
+                          <Soumettre className="btn sec sm">Supprimer</Soumettre>
                         </form>
                       </td>
                     </tr>
@@ -149,7 +150,7 @@ export default async function Page({
               <div className="champ"><label className="ch" htmlFor="places">Places</label>
                 <input id="places" name="places" type="number" min={0} placeholder=" " /></div>
             </div>
-            <button className="btn pleine" type="submit">Ajouter</button>
+            <Soumettre className="btn pleine">Ajouter</Soumettre>
           </form>
         </aside>
       </div>
